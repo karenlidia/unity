@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unity Automobile - Bengkel Rekanan Asuransi di Medan</title>
+    <meta name="description" content="Unity Automobile adalah bengkel rekanan asuransi terbaik di Medan sejak 2003. Menyediakan layanan body repair, cat oven, servis, dan klaim asuransi.">
+    <meta name="keywords" content="bengkel mobil medan, bengkel asuransi medan, unity automobile, body repair medan, cat oven medan, service mobil medan">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <!-- AOS (Animate on Scroll) Library -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F9FA;
+            scroll-behavior: smooth;
+        }
+        .primary-blue { color: #0A74DA; }
+        .bg-primary-blue { background-color: #0A74DA; }
+        .border-primary-blue { border-color: #0A74DA; }
+        .accent-dark { color: #1E1E1E; }
+        .bg-accent-dark { background-color: #1E1E1E; }
+        
+        /* PERBAIKAN: Mengganti gambar hero dan menyesuaikan gradient */
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url('https://images.unsplash.com/photo-1541348263662-e384218d6a1d?q=80&w=1974&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+        }
+        .testimonial-card, .service-card {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+            pointer-events: none;
+        }
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-gray-800 antialiased">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <a href="#home" class="text-2xl font-bold accent-dark">Unity<span class="primary-blue">Automobile</span></a>
+                <nav class="hidden md:flex space-x-8 text-sm font-semibold">
+                    <a href="#layanan" class="hover:primary-blue transition-colors duration-300">Layanan</a>
+                    <a href="#asuransi" class="hover:primary-blue transition-colors duration-300">Rekanan</a>
+                    <a href="#galeri" class="hover:primary-blue transition-colors duration-300">Galeri</a>
+                    <a href="#testimoni" class="hover:primary-blue transition-colors duration-300">Testimoni</a>
+                    <a href="#lokasi" class="hover:primary-blue transition-colors duration-300">Lokasi</a>
+                </nav>
+                <a href="#kontak-form" class="hidden md:inline-block bg-primary-blue text-white px-5 py-2 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-300">Hubungi Kami</a>
+                 <button id="mobile-menu-button" class="md:hidden">
+                    <i data-feather="menu"></i>
+                </button>
+            </div>
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4">
+                <a href="#layanan" class="nav-link block py-2 px-4 text-sm hover:bg-gray-200 rounded">Layanan</a>
+                <a href="#asuransi" class="nav-link block py-2 px-4 text-sm hover:bg-gray-200 rounded">Rekanan</a>
+                <a href="#galeri" class="nav-link block py-2 px-4 text-sm hover:bg-gray-200 rounded">Galeri</a>
+                <a href="#testimoni" class="nav-link block py-2 px-4 text-sm hover:bg-gray-200 rounded">Testimoni</a>
+                <a href="#lokasi" class="nav-link block py-2 px-4 text-sm hover:bg-gray-200 rounded">Lokasi</a>
+                <a href="#kontak-form" class="nav-link block mt-2 w-full text-center bg-primary-blue text-white px-5 py-2 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-300">Hubungi Kami</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <!-- PERBAIKAN: Padding (py) dikecilkan agar section tidak terlalu tinggi -->
+        <section id="home" class="hero-section text-white py-20 md:py-32">
+            <div class="container mx-auto px-6 text-center" data-aos="fade-in">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-4">UNITY AUTOMOBILE</h1>
+                <p class="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto">Bengkel Rekanan Asuransi Terbaik di Medan</p>
+                <div class="flex justify-center items-center flex-wrap gap-4">
+                    <a href="#kontak-form" class="bg-primary-blue text-white px-8 py-3 rounded-lg font-bold hover:bg-opacity-90 transition-transform duration-300 transform hover:scale-105">
+                        <i data-feather="send" class="inline-block -mt-1 mr-2"></i>Kirim Pertanyaan
+                    </a>
+                    <a href="#layanan" class="border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:text-accent-dark transition-all duration-300 transform hover:scale-105">
+                        Lihat Layanan Kami
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tentang Kami -->
+        <section id="tentang" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16" data-aos="fade-up">
+                    <div class="lg:w-1/2">
+                        <img src="gambar1.jpeg" alt="Tim Bengkel Unity Automobile" class="rounded-lg shadow-xl w-full" onerror="this.onerror=null; this.src='https://placehold.co/600x450/1E1E1E/FFFFFF?text=Unity+Automobile';">
+                    </div>
+                    <div class="lg:w-1/2">
+                        <h2 class="text-3xl sm:text-4xl font-bold accent-dark">Tentang Unity Automobile</h2>
+                        <p class="text-gray-500 mt-2 mb-6">Profesional, Terpercaya, dan Berpengalaman Sejak 2003.</p>
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            Unity Automobile adalah bengkel rekanan asuransi yang telah berdiri sejak tahun 2003 dan berlokasi di kota Medan. Kami dikenal sebagai bengkel yang menyediakan layanan perawatan dan perbaikan kendaraan dengan kualitas terbaik.
+                        </p>
+                        <p class="text-gray-700 mb-6 leading-relaxed">
+                            Kami memiliki tim teknisi yang berpengalaman dan berkualifikasi tinggi, didukung dengan peralatan modern untuk menunjang pekerjaan.
+                        </p>
+                        <h3 class="text-xl font-semibold accent-dark mb-4">Mengapa Memilih Kami?</h3>
+                         <ul class="space-y-4 text-gray-700">
+                            <li class="flex items-start"><i data-feather="check-circle" class="text-green-500 mr-3 mt-1 flex-shrink-0"></i><span><strong>Kepuasan Pelanggan:</strong> Prioritas utama kami adalah memberikan hasil yang memuaskan dan layanan yang ramah.</span></li>
+                            <li class="flex items-start"><i data-feather="check-circle" class="text-green-500 mr-3 mt-1 flex-shrink-0"></i><span><strong>Suku Cadang Berkualitas:</strong> Kami hanya menggunakan suku cadang asli dan berkualitas tinggi untuk setiap perbaikan.</span></li>
+                            <li class="flex items-start"><i data-feather="check-circle" class="text-green-500 mr-3 mt-1 flex-shrink-0"></i><span><strong>Proses Transparan:</strong> Kami memberikan estimasi biaya yang jelas dan penjelasan detail sebelum pengerjaan dimulai.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- PERBAIKAN: Section Statistik Baru untuk meningkatkan kepercayaan -->
+        <section id="stats" class="py-16 bg-gray-800 text-white">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center" data-aos="fade-up">
+                    <div>
+                        <h3 class="text-4xl font-bold primary-blue">1,500+</h3>
+                        <p class="mt-2 font-semibold">Klien Puas</p>
+                    </div>
+                    <div>
+                        <h3 class="text-4xl font-bold primary-blue">20+</h3>
+                        <p class="mt-2 font-semibold">Tahun Pengalaman</p>
+                    </div>
+                    <div>
+                        <h3 class="text-4xl font-bold primary-blue" id="insurance-count">10+</h3>
+                        <p class="mt-2 font-semibold">Asuransi Rekanan</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Layanan Kami -->
+        <section id="layanan" class="py-16 md:py-24">
+            <div class="container mx-auto px-6" data-aos="fade-up">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold accent-dark">Layanan Profesional Kami</h2>
+                    <p class="text-gray-600 mt-2">Menyediakan semua kebutuhan otomotif Anda.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-lg service-card text-center">
+                        <div class="bg-primary-blue inline-flex p-4 rounded-full text-white mb-4"><i data-feather="tool" class="h-8 w-8"></i></div>
+                        <h3 class="text-xl font-bold accent-dark mb-2">Body Repair</h3>
+                        <p class="text-gray-600">Perbaikan bodi penyok, lecet, hingga restorasi total pasca kecelakaan.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-lg service-card text-center">
+                        <div class="bg-primary-blue inline-flex p-4 rounded-full text-white mb-4"><i data-feather="aperture" class="h-8 w-8"></i></div>
+                        <h3 class="text-xl font-bold accent-dark mb-2">Cat Oven</h3>
+                        <p class="text-gray-600">Pengecatan ulang dengan sistem oven untuk hasil maksimal dan tahan lama.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-lg service-card text-center">
+                        <div class="bg-primary-blue inline-flex p-4 rounded-full text-white mb-4"><i data-feather="settings" class="h-8 w-8"></i></div>
+                        <h3 class="text-xl font-bold accent-dark mb-2">Servis Berkala</h3>
+                        <p class="text-gray-600">Perawatan rutin mesin untuk menjaga performa kendaraan Anda.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-lg service-card text-center">
+                        <div class="bg-primary-blue inline-flex p-4 rounded-full text-white mb-4"><i data-feather="droplet" class="h-8 w-8"></i></div>
+                        <h3 class="text-xl font-bold accent-dark mb-2">Ganti Oli</h3>
+                        <p class="text-gray-600">Penggantian oli mesin dan transmisi dengan produk berkualitas.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-lg service-card text-center">
+                        <div class="bg-primary-blue inline-flex p-4 rounded-full text-white mb-4"><i data-feather="disc" class="h-8 w-8"></i></div>
+                        <h3 class="text-xl font-bold accent-dark mb-2">Spooring & Balancing</h3>
+                        <p class="text-gray-600">Menyelaraskan roda untuk kenyamanan dan keamanan berkendara.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-lg service-card text-center">
+                        <div class="bg-primary-blue inline-flex p-4 rounded-full text-white mb-4"><i data-feather="shield" class="h-8 w-8"></i></div>
+                        <h3 class="text-xl font-bold accent-dark mb-2">Klaim Asuransi</h3>
+                        <p class="text-gray-600">Bantuan pengurusan klaim asuransi mobil Anda dengan mudah.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Asuransi Rekanan -->
+        <section id="asuransi" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6" data-aos="fade-up">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold accent-dark">Rekanan Asuransi Kami</h2>
+                    <p class="text-gray-600 mt-2">Kami bekerja sama dengan berbagai perusahaan asuransi terkemuka.</p>
+                </div>
+                <div id="insurance-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 items-center">
+                    <!-- Logos will be dynamically loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Galeri -->
+        <section id="galeri" class="py-16 md:py-24">
+             <div class="container mx-auto px-6" data-aos="fade-up">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold accent-dark">Galeri Pengerjaan</h2>
+                    <p class="text-gray-600 mt-2">Lihat hasil kerja dan fasilitas modern kami.</p>
+                </div>
+                <div id="gallery-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Gallery images will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimoni -->
+        <section id="testimoni" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6" data-aos="fade-up">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold accent-dark">Testimoni Pelanggan</h2>
+                    <p class="text-gray-600 mt-2">Apa kata mereka tentang layanan kami.</p>
+                </div>
+                <div id="testimonial-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                     <!-- Testimonials will be loaded here -->
+                </div>
+                <div class="text-center">
+                    <button id="show-testimonial-form-btn" class="bg-primary-blue text-white px-8 py-3 rounded-lg font-bold hover:bg-opacity-90 transition-all duration-300">
+                        Tambahkan Testimoni Anda
+                    </button>
+                </div>
+                <div id="testimonial-form-container" class="hidden max-w-2xl mx-auto bg-gray-50 p-8 rounded-lg shadow-inner mt-12 transition-all">
+                    <h3 class="text-2xl font-bold text-center accent-dark mb-6">Bagikan Pengalaman Anda</h3>
+                    <form id="testimonial-form">
+                        <div class="mb-4">
+                            <label for="nama" class="block text-gray-700 font-semibold mb-2">Nama Anda</label>
+                            <input type="text" id="nama" name="nama" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div class="mb-4">
+                             <label class="block text-gray-700 font-semibold mb-2">Rating</label>
+                             <div id="star-rating" class="flex items-center space-x-1 text-3xl text-gray-300 cursor-pointer">
+                                <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+                             </div>
+                             <input type="hidden" id="rating-value" name="rating" required>
+                        </div>
+                        <div class="mb-6">
+                            <label for="pesan" class="block text-gray-700 font-semibold mb-2">Testimoni Anda</label>
+                            <textarea id="pesan" name="pesan" rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                        </div>
+                        <button type="submit" id="submit-testimonial-btn" class="w-full bg-green-500 text-white py-3 px-6 rounded-lg font-bold hover:bg-green-600 transition-all duration-300">
+                           Kirim Testimoni
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lokasi -->
+        <section id="lokasi" class="py-16 md:py-24">
+            <div class="container mx-auto px-6" data-aos="fade-up">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold accent-dark">Kunjungi Kami</h2>
+                    <p class="text-gray-600 mt-2">Jl. Pinus Raya No.18, Medan</p>
+                </div>
+                <div class="aspect-w-16 aspect-h-9 rounded-lg shadow-xl overflow-hidden">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3982.106593010467!2d98.69750867579737!3d3.563063350616982!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3031305430f0653d%3A0xc3c54f5793d56e0!2sJl.%20Pinus%20Raya%20No.18%2C%20Perumnas%20Simalingkar%2C%20Kec.%20Medan%20Tuntungan%2C%20Kota%20Medan%2C%20Sumatera%20Utara%2020135!5e0!3m2!1sen!2sid!4v1683182855265!5m2!1sen!2sid" 
+                        width="100%" 
+                        height="450" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                 <div class="text-center mt-8">
+                     <button id="share-location-btn" class="bg-green-500 text-white px-8 py-3 rounded-lg font-bold hover:bg-green-600 transition-all duration-300">
+                         <i data-feather="share-2" class="inline-block mr-2"></i>Bagikan Lokasi
+                     </button>
+                 </div>
+            </div>
+        </section>
+        
+        <!-- Kontak WhatsApp Form -->
+        <section id="kontak-form" class="py-16 md:py-24 bg-accent-dark text-white">
+            <div class="container mx-auto px-6 max-w-2xl text-center" data-aos="fade-up">
+                <h2 class="text-3xl sm:text-4xl font-bold">Punya Pertanyaan?</h2>
+                <p class="text-gray-300 mt-2 mb-8 mx-auto">Hubungi kami melalui WhatsApp untuk konsultasi cepat atau penjadwalan layanan. Isi form di bawah ini.</p>
+                <div class="bg-white rounded-lg shadow-xl p-8 text-gray-800">
+                    <form id="wa-form">
+                        <div class="mb-4">
+                            <label for="wa-nama" class="block text-gray-700 font-semibold mb-2 text-left">Nama</label>
+                            <input type="text" id="wa-nama" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-primary-blue" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="wa-no" class="block text-gray-700 font-semibold mb-2 text-left">Nomor WhatsApp</label>
+                            <input type="tel" id="wa-no" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-primary-blue" placeholder="Contoh: 08123456789" required>
+                        </div>
+                        <div class="mb-6">
+                            <label for="wa-pesan" class="block text-gray-700 font-semibold mb-2 text-left">Pesan Singkat</label>
+                            <textarea id="wa-pesan" rows="3" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-primary-blue" placeholder="Contoh: Saya ingin bertanya tentang body repair." required></textarea>
+                        </div>
+                        <button type="submit" id="send-wa-btn" class="w-full bg-green-500 text-white py-3 px-6 rounded-lg font-bold hover:bg-green-600 transition-all duration-300 flex items-center justify-center">
+                           <i data-feather="message-circle" class="mr-2"></i> Kirim ke WhatsApp
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">UNITY AUTOMOBILE</h3>
+                    <p class="text-sm">Bengkel rekanan asuransi terpercaya di Medan, menyediakan layanan berkualitas dengan teknisi berpengalaman dan peralatan modern.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">Informasi Kontak</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-start"><i data-feather="map-pin" class="w-4 h-4 mr-3 mt-1 flex-shrink-0"></i>Jl. Pinus Raya No.18, Medan</li>
+                        <li class="flex items-start"><i data-feather="phone" class="w-4 h-4 mr-3 mt-1 flex-shrink-0"></i>0853-7233-6699</li>
+                        <li class="flex items-start"><i data-feather="mail" class="w-4 h-4 mr-3 mt-1 flex-shrink-0"></i>unity_automobile@yahoo.com</li>
+                    </ul>
+                </div>
+                 <div>
+                    <h3 class="text-lg font-bold text-white mb-4">Jam Operasional</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li>Senin - Jumat: 08.30 - 17.30</li>
+                        <li>Sabtu & Minggu: Tutup</li>
+                    </ul>
+                </div>
+            </div>
+             <div class="mt-8 border-t border-gray-800 pt-8 flex flex-col sm:flex-row justify-between items-center text-sm">
+                <p>&copy; <span id="current-year"></span> Unity Automobile. All Rights Reserved.</p>
+                <p class="mt-4 sm:mt-0">Total Pengunjung: <span id="visitor-count" class="font-bold">Memuat...</span></p>
+             </div>
+        </div>
+    </footer>
+    
+    <!-- AOS (Animate on Scroll) Library -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- CONFIGURATION ---
+            const SUPABASE_URL = 'https://fbuwyproxqmkuwncyxmf.supabase.co'; 
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZidXd5cHJveHFta3V3bmN5eG1mIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODc4MjEyNSwiZXhwIjoyMDY0MzU4MTI1fQ.3FMS5eJchIRpgS7CcdL7MpsMXWEh_8SyQXxOobUGzYU';
+            const WORKSHOP_WA_NUMBER = '6285372336699'; 
+
+            // --- SCRIPT INITIALIZATION ---
+            function initApp() {
+                if (SUPABASE_URL.includes('ganti-dengan-url-supabase-anda') || SUPABASE_ANON_KEY.includes('GANTI_DENGAN_ANON_KEY_SUPABASE_ANDA')) {
+                    console.error("KONFIGURASI WAJIB: Ganti placeholder SUPABASE_URL dan SUPABASE_ANON_KEY di dalam kode.");
+                    document.body.innerHTML = `
+                        <div style="font-family: sans-serif; background-color: #ffcccc; color: #a80000; text-align: center; padding: 40px; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            <h1 style="font-size: 2em; margin-bottom: 20px;">Kesalahan Konfigurasi</h1>
+                            <p style="font-size: 1.2em;">Website belum terhubung ke database.</p>
+                            <p style="margin-top: 10px;">Harap ganti placeholder <strong>SUPABASE_URL</strong> dan <strong>SUPABASE_ANON_KEY</strong> di dalam file HTML dengan kredensial dari proyek Supabase Anda.</p>
+                        </div>`;
+                    return; 
+                }
+
+                const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                feather.replace();
+
+                AOS.init({
+                    duration: 800,
+                    once: true,
+                    offset: 50,
+                });
+
+                // --- UI ELEMENT SETUP ---
+                document.getElementById('current-year').textContent = new Date().getFullYear();
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const mobileMenu = document.getElementById('mobile-menu');
+                mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+                });
+                
+                // --- DATA LOADING ---
+                incrementAndShowVisitorCount();
+                loadInsurancePartners();
+                loadGallery();
+                loadTestimonials();
+
+                // --- EVENT LISTENERS ---
+                setupTestimonialForm();
+                setupWhatsAppForm();
+                setupShareLocation();
+            
+                // --- FUNCTIONS ---
+                async function incrementAndShowVisitorCount() {
+                    const visitorCountEl = document.getElementById('visitor-count');
+                    try {
+                        const { data, error } = await supabaseClient.rpc('increment_visitor_count');
+                        if (error) throw error;
+                        visitorCountEl.textContent = data;
+                    } catch (error) {
+                        console.error('Error fetching visitor count:', error.message);
+                        visitorCountEl.textContent = 'N/A';
+                    }
+                }
+                
+                async function loadInsurancePartners() {
+                    const listEl = document.getElementById('insurance-list');
+                    const countEl = document.getElementById('insurance-count');
+                    listEl.innerHTML = '<p class="col-span-full text-center">Memuat rekanan...</p>';
+                    try {
+                        const { data, error } = await supabaseClient.from('insurance_partners').select('*', { count: 'exact' });
+                        if(error) throw error;
+
+                        listEl.innerHTML = '';
+                        if(data.length > 0) {
+                            if (countEl) {
+                                countEl.textContent = `${data.length}+`;
+                            }
+                            data.forEach(partner => {
+                               listEl.innerHTML += `
+                                    <div class="flex justify-center items-center transform transition-transform duration-300 hover:scale-110">
+                                        <img src="${partner.logo_url}" alt="${partner.name}" class="h-12 md:h-16 transition-all duration-300" onerror="this.style.display='none'">
+                                    </div>
+                               `;
+                            });
+                        } else {
+                            listEl.innerHTML = '<p class="col-span-full text-center">Belum ada rekanan asuransi.</p>';
+                        }
+                    } catch(error) {
+                        console.error('Error loading insurance partners:', error.message);
+                        listEl.innerHTML = '<p class="col-span-full text-center text-red-500">Gagal memuat rekanan asuransi.</p>';
+                    }
+                }
+                
+                async function loadGallery() {
+                    const galleryContainer = document.getElementById('gallery-container');
+                    galleryContainer.innerHTML = '<p class="col-span-full text-center">Memuat galeri...</p>';
+                    try {
+                        const { data, error } = await supabaseClient.from('gallery_images').select('*').order('created_at', { ascending: false }).limit(6);
+                        if (error) throw error;
+
+                        galleryContainer.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(file => {
+                                galleryContainer.innerHTML += `
+                                    <div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden group shadow-lg">
+                                        <img src="${file.image_url}" alt="${file.title || 'Foto Galeri'}" 
+                                             class="w-full h-full object-cover transition-transform duration-500 transform group-hover:scale-110"
+                                             onerror="this.onerror=null;this.src='https://placehold.co/400x300/CCCCCC/FFFFFF?text=Image+Not+Found';">
+                                    </div>`;
+                            });
+                        } else {
+                            galleryContainer.innerHTML = '<p class="col-span-full text-center">Galeri masih kosong.</p>';
+                        }
+                    } catch (error) {
+                        console.error('Error loading gallery:', error.message);
+                        galleryContainer.innerHTML = '<p class="col-span-full text-center text-red-500">Gagal memuat galeri.</p>';
+                    }
+                }
+            
+                async function loadTestimonials() {
+                    const testimonialList = document.getElementById('testimonial-list');
+                    testimonialList.innerHTML = '<p class="col-span-full text-center">Memuat testimoni...</p>';
+                    try {
+                        const { data, error } = await supabaseClient.from('testimonials').select('*').order('created_at', { ascending: false }).limit(6);
+                        if (error) throw error;
+                        testimonialList.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(testimonial => {
+                                const stars = '★'.repeat(testimonial.rating) + '☆'.repeat(5 - testimonial.rating);
+                                testimonialList.innerHTML += `
+                                    <div class="bg-white p-6 rounded-lg testimonial-card">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 rounded-full bg-primary-blue text-white flex items-center justify-center font-bold text-xl mr-4 flex-shrink-0">
+                                                ${testimonial.name.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold accent-dark">${testimonial.name}</h4>
+                                                <div class="text-yellow-400 text-lg">${stars}</div>
+                                            </div>
+                                        </div>
+                                        <p class="text-gray-600 italic">"${testimonial.message}"</p>
+                                    </div>`;
+                            });
+                        } else {
+                             testimonialList.innerHTML = '<p class="col-span-full text-center">Jadilah yang pertama memberikan testimoni!</p>';
+                        }
+                    } catch (error) {
+                         console.error('Error loading testimonials:', error.message);
+                         testimonialList.innerHTML = '<p class="col-span-full text-center text-red-500">Gagal memuat testimoni.</p>';
+                    }
+                }
+                
+                function setupTestimonialForm() {
+                    const showBtn = document.getElementById('show-testimonial-form-btn');
+                    const formContainer = document.getElementById('testimonial-form-container');
+                    const form = document.getElementById('testimonial-form');
+                    const stars = document.querySelectorAll('#star-rating span');
+                    const ratingValueInput = document.getElementById('rating-value');
+                    const submitBtn = document.getElementById('submit-testimonial-btn');
+
+                    showBtn.addEventListener('click', () => {
+                        formContainer.classList.remove('hidden');
+                        formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        showBtn.classList.add('hidden');
+                    });
+
+                    stars.forEach(star => {
+                        star.addEventListener('click', () => {
+                            const value = star.getAttribute('data-value');
+                            ratingValueInput.value = value;
+                            stars.forEach(s => {
+                                s.classList.toggle('text-yellow-400', s.getAttribute('data-value') <= value);
+                                s.classList.toggle('text-gray-300', s.getAttribute('data-value') > value);
+                            });
+                        });
+                    });
+
+                    form.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        if (!ratingValueInput.value) {
+                            alert("Harap berikan rating bintang terlebih dahulu.");
+                            return;
+                        }
+                        setLoading(submitBtn, true);
+
+                        const { error } = await supabaseClient
+                            .from('testimonials')
+                            .insert([{ name: form.nama.value, rating: form.rating.value, message: form.pesan.value }]);
+                        
+                        setLoading(submitBtn, false);
+                        if (error) {
+                            alert('Maaf, terjadi kesalahan saat mengirim testimoni.');
+                            console.error('Error submitting testimonial:', error.message);
+                        } else {
+                            alert('Terima kasih! Testimoni Anda telah diterima.');
+                            form.reset();
+                            ratingValueInput.value = '';
+                            stars.forEach(s => s.classList.replace('text-yellow-400', 'text-gray-300'));
+                            formContainer.classList.add('hidden');
+                            showBtn.classList.remove('hidden');
+                            loadTestimonials(); // Refresh list
+                        }
+                    });
+                }
+
+                function setupWhatsAppForm() {
+                    const waForm = document.getElementById('wa-form');
+                    const sendBtn = document.getElementById('send-wa-btn');
+                    waForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        setLoading(sendBtn, true);
+
+                        const name = waForm['wa-nama'].value;
+                        const phone = waForm['wa-no'].value;
+                        const message = waForm['wa-pesan'].value;
+
+                        try {
+                            await supabaseClient.from('contacts').insert([{ name, phone, message }]);
+                        } catch(error) {
+                            console.error('Error saving contact to DB:', error.message);
+                        }
+                        
+                        const waMessage = `Halo Unity Automobile,\n\nNama: *${name}*\nNo. WA: *${phone}*\n\nPesan:\n${message}`;
+                        const encodedMessage = encodeURIComponent(waMessage);
+                        window.open(`https://api.whatsapp.com/send?phone=${WORKSHOP_WA_NUMBER}&text=${encodedMessage}`, '_blank');
+                        
+                        setLoading(sendBtn, false);
+                        waForm.reset();
+                    });
+                }
+
+                function setupShareLocation() {
+                    document.getElementById('share-location-btn').addEventListener('click', () => {
+                        const locationUrl = 'https://maps.app.goo.gl/wQhCfhT1E3gXJqYV6'; 
+                        const shareData = {
+                            title: 'Lokasi Unity Automobile',
+                            text: 'Kunjungi Unity Automobile di Medan. Berikut lokasinya:',
+                            url: locationUrl,
+                        };
+                        
+                        if (navigator.share) {
+                            navigator.share(shareData).catch(err => alert("Gagal membagikan: " + err));
+                        } else {
+                            navigator.clipboard.writeText(locationUrl).then(() => {
+                                alert('Lokasi disalin ke clipboard!');
+                            });
+                        }
+                    });
+                }
+                
+                function setLoading(button, isLoading) {
+                    if (isLoading) {
+                        button.classList.add('btn-loading');
+                        button.disabled = true;
+                    } else {
+                        button.classList.remove('btn-loading');
+                        button.disabled = false;
+                    }
+                }
+            }
+
+            initApp();
+        });
+    </script>
+</body>
+</html>

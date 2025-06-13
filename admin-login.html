@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Unity Auto Web</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F9FA;
+        }
+        .primary-blue { color: #0A74DA; }
+        .bg-primary-blue { background-color: #0A74DA; }
+        .accent-dark { color: #1E1E1E; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100">
+
+    <div class="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-3xl font-bold accent-dark">Admin Unity<span class="primary-blue">Auto</span></h1>
+            <p class="text-gray-500 mt-2">Silakan login untuk mengelola konten website.</p>
+        </div>
+
+        <!-- Pesan Notifikasi -->
+        <div id="notification-message" class="hidden p-4 text-sm rounded-lg" role="alert">
+            <!-- Pesan sukses atau error akan ditampilkan di sini -->
+        </div>
+        
+        <!-- Form Login -->
+        <form id="login-form" class="space-y-6" novalidate>
+            <!-- Input Email -->
+            <div>
+                <label for="email" class="text-sm font-semibold text-gray-700 block mb-2">Email</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-feather="mail" class="h-5 w-5 text-gray-400"></i>
+                    </div>
+                    <input type="email" id="email" name="email"
+                           class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           placeholder="admin@unityauto.com" required>
+                </div>
+            </div>
+            
+            <!-- Input Password -->
+            <div>
+                <label for="password" class="text-sm font-semibold text-gray-700 block mb-2">Password</label>
+                <div class="relative">
+                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-feather="lock" class="h-5 w-5 text-gray-400"></i>
+                    </div>
+                    <input type="password" id="password" name="password"
+                           class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           placeholder="••••••••" required>
+                </div>
+            </div>
+            
+            <!-- Tombol Submit -->
+            <button type="submit" id="login-button"
+                    class="w-full px-4 py-3 font-semibold text-white bg-primary-blue rounded-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 flex items-center justify-center disabled:opacity-50">
+                <span id="button-text">Login</span>
+                <div id="loading-spinner" class="hidden animate-spin rounded-full h-5 w-5 border-b-2 border-white ml-3"></div>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inisialisasi Feather Icons setelah DOM siap
+            feather.replace();
+
+            // --- KONEKSI SUPABASE ---
+            const SUPABASE_URL = 'https://fbuwyproxqmkuwncyxmf.supabase.co'; 
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZidXd5cHJveHFta3V3bmN5eG1mIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODc4MjEyNSwiZXhwIjoyMDY0MzU4MTI1fQ.3FMS5eJchIRpgS7CcdL7MpsMXWEh_8SyQXxOobUGzYU';
+            const notificationDiv = document.getElementById('notification-message');
+
+            function showNotification(message, type = 'error') {
+                notificationDiv.textContent = message;
+                notificationDiv.className = 'p-4 text-sm rounded-lg'; // Reset kelas
+                if (type === 'error') {
+                    notificationDiv.classList.add('bg-red-100', 'text-red-700');
+                } else {
+                    notificationDiv.classList.add('bg-green-100', 'text-green-700');
+                }
+                notificationDiv.classList.remove('hidden');
+            }
+            
+            if (SUPABASE_URL === 'https://your-supabase-url.supabase.co' || SUPABASE_ANON_KEY === 'your-supabase-anon-key') {
+                console.warn("PENTING: Harap ganti SUPABASE_URL dan SUPABASE_ANON_KEY dengan kredensial proyek Supabase Anda.");
+                showNotification('Konfigurasi Error! Cek konsol browser untuk detail.', 'error');
+                return; // Hentikan eksekusi jika tidak dikonfigurasi
+            }
+
+            // Inisialisasi client Supabase menggunakan objek 'supabase' global dari SDK
+            const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            // --- ELEMEN FORM ---
+            const loginForm = document.getElementById('login-form');
+            const loginButton = document.getElementById('login-button');
+            const buttonText = document.getElementById('button-text');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            
+            // --- PENGECEKAN SESI AKTIF ---
+            const checkSession = async () => {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    console.log('Sesi aktif ditemukan, mengarahkan ke dashboard...');
+                    window.location.replace('admin-dashboard.html');
+                }
+            };
+            checkSession();
+
+            // --- LOGIKA FORM SUBMIT ---
+            loginForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                loginButton.disabled = true;
+                buttonText.textContent = 'Memproses...';
+                loadingSpinner.classList.remove('hidden');
+                notificationDiv.classList.add('hidden');
+
+                const email = event.target.email.value;
+                const password = event.target.password.value;
+
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+
+                if (error) {
+                    showNotification('Login gagal: Periksa kembali email atau password Anda.', 'error');
+                } else if (data.session) {
+                    showNotification('Login berhasil! Mengarahkan ke dashboard...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'admin-dashboard.html';
+                    }, 1000);
+                }
+
+                loginButton.disabled = false;
+                buttonText.textContent = 'Login';
+                loadingSpinner.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
