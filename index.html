@@ -1,50 +1,44 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unity Automobile - Bengkel Rekanan Asuransi di Medan</title>
-    <meta name="description"
-        content="Unity Automobile adalah bengkel rekanan asuransi terbaik di Medan sejak 2003. Menyediakan layanan body repair, cat oven, servis, dan klaim asuransi.">
-    <meta name="keywords"
-        content="bengkel mobil medan, bengkel asuransi medan, unity automobile, body repair medan, cat oven medan, service mobil medan">
-
+    <meta name="description" content="Unity Automobile adalah bengkel rekanan asuransi terbaik di Medan sejak 2003. Menyediakan layanan body repair, cat oven, servis, dan klaim asuransi.">
+    <meta name="keywords" content="bengkel mobil medan, bengkel asuransi medan, unity automobile, body repair medan, cat oven medan, service mobil medan">
+    
     <link rel="icon" type="image/png" href="/unity.png">
 
-    <!-- Tailwind CSS -->
+    <!-- Library Eksternal -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts: Inter -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 
-    <!-- Supabase JS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- Feather Icons -->
-    <script src="https://unpkg.com/feather-icons"></script>
-
-    <!-- AOS (Animate on Scroll) Library -->
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-
+    <!-- Kode CSS digabung di sini -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc;
             scroll-behavior: smooth;
         }
+        .font-poppins { font-family: 'Poppins', sans-serif; }
         .primary-blue { color: #0A74DA; }
         .bg-primary-blue { background-color: #0A74DA; }
-        .accent-dark { color: #1E1E1E; }
+        .accent-dark { color: #111827; }
+        .bg-accent-dark { background-color: #111827; }
+        
         .hero-section {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-                        url('https://images.unsplash.com/photo-1541348263662-e384218d6a1d?q=80&w=1974&auto=format&fit=crop') no-repeat center center;
+            background: linear-gradient(rgba(17, 24, 39, 0.7), rgba(17, 24, 39, 0.7)), 
+                        url('https://images.unsplash.com/photo-1617531322474-3c136b334650?q=80&w=2070&auto=format&fit=crop') no-repeat center center;
             background-size: cover;
         }
         .testimonial-card, .service-card {
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+            background: white;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid #e5e7eb;
         }
@@ -78,12 +72,12 @@
 <body class="text-gray-800 antialiased">
 
     <!-- Header -->
-    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+    <header class="bg-white/90 backdrop-blur-lg sticky top-0 z-50 shadow-md">
         <div class="container mx-auto px-6 py-4">
             <div class="flex items-center justify-between">
-                <!-- PERBAIKAN: Memberi ID untuk diisi oleh JS -->
-                <a href="#home" id="header-logo" class="text-2xl font-bold accent-dark">Memuat...</a>
-                <nav class="hidden md:flex space-x-8 text-sm font-semibold">
+                <!-- PERBAIKAN: Header di-hardcode sesuai permintaan -->
+                <a href="#home" class="text-2xl font-poppins font-bold accent-dark">Unity <span class="primary-blue">Automobile</span></a>
+                <nav class="hidden md:flex space-x-8 text-sm font-semibold text-gray-600">
                     <a href="#layanan" class="hover:primary-blue transition-colors duration-300">Layanan</a>
                     <a href="#asuransi" class="hover:primary-blue transition-colors duration-300">Rekanan</a>
                     <a href="#galeri" class="hover:primary-blue transition-colors duration-300">Galeri</a>
@@ -91,7 +85,7 @@
                     <a href="#lokasi" class="hover:primary-blue transition-colors duration-300">Lokasi</a>
                 </nav>
                 <a href="#kontak-form"
-                    class="hidden md:inline-block bg-primary-blue text-white px-5 py-2 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-300">Hubungi
+                    class="hidden md:inline-block bg-primary-blue text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-300 shadow-lg shadow-blue-500/20">Hubungi
                     Kami</a>
                 <button id="mobile-menu-button" class="md:hidden">
                     <i data-feather="menu"></i>
@@ -99,11 +93,11 @@
             </div>
             <!-- Mobile Menu -->
             <div id="mobile-menu" class="hidden md:hidden mt-4">
-                <a href="#layanan" class="nav-link block py-2 px-4 text-sm hover:bg-gray-200 rounded">Layanan</a>
-                <a href="#asuransi" class="nav-link block py-2 px-4 text-sm hover:bg-gray-200 rounded">Rekanan</a>
-                <a href="#galeri" class="nav-link block py-2 px-4 text-sm hover:bg-gray-200 rounded">Galeri</a>
-                <a href="#testimoni" class="nav-link block py-2 px-4 text-sm hover:bg-gray-200 rounded">Testimoni</a>
-                <a href="#lokasi" class="nav-link block py-2 px-4 text-sm hover:bg-gray-200 rounded">Lokasi</a>
+                <a href="#layanan" class="nav-link block py-2 px-4 text-sm hover:bg-gray-100 rounded">Layanan</a>
+                <a href="#asuransi" class="nav-link block py-2 px-4 text-sm hover:bg-gray-100 rounded">Rekanan</a>
+                <a href="#galeri" class="nav-link block py-2 px-4 text-sm hover:bg-gray-100 rounded">Galeri</a>
+                <a href="#testimoni" class="nav-link block py-2 px-4 text-sm hover:bg-gray-100 rounded">Testimoni</a>
+                <a href="#lokasi" class="nav-link block py-2 px-4 text-sm hover:bg-gray-100 rounded">Lokasi</a>
                 <a href="#kontak-form"
                     class="nav-link block mt-2 w-full text-center bg-primary-blue text-white px-5 py-2 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-300">Hubungi
                     Kami</a>
@@ -113,14 +107,13 @@
 
     <main>
         <!-- Hero Section -->
-        <section id="home" class="hero-section text-white py-20 md:py-32">
+        <section id="home" class="hero-section text-white py-24 md:py-36">
             <div class="container mx-auto px-6 text-center" data-aos="fade-in">
-                <!-- PERBAIKAN: Memberi ID untuk diisi oleh JS -->
-                <h1 id="profile-company-name-hero" class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-4">Memuat Nama Bengkel...</h1>
-                <p id="profile-tagline" class="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto">Memuat tagline...</p>
+                <h1 id="profile-company-name-hero" class="text-4xl sm:text-5xl md:text-6xl font-poppins font-bold leading-tight mb-4">UNITY AUTOMOBILE</h1>
+                <p id="profile-tagline" class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">Bengkel Rekanan Asuransi Terbaik di Medan</p>
                 <div class="flex justify-center items-center flex-wrap gap-4">
                     <a href="#kontak-form"
-                        class="bg-primary-blue text-white px-8 py-3 rounded-lg font-bold hover:bg-opacity-90 transition-transform duration-300 transform hover:scale-105">
+                        class="bg-primary-blue text-white px-8 py-3 rounded-lg font-bold hover:bg-opacity-90 transition-transform duration-300 transform hover:scale-105 shadow-xl">
                         <i data-feather="send" class="inline-block -mt-1 mr-2"></i>Kirim Pertanyaan
                     </a>
                     <a href="#layanan"
@@ -136,17 +129,16 @@
             <div class="container mx-auto px-6">
                 <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16" data-aos="fade-up">
                     <div class="lg:w-1/2">
-                        <img src="gambar2.jpeg" alt="Tim Bengkel Unity Automobile" class="rounded-lg shadow-xl w-full"
+                        <img src="gambar2.jpeg" alt="Tim Bengkel Unity Automobile" class="rounded-lg shadow-2xl w-full"
                             onerror="this.onerror=null; this.src='https://placehold.co/600x450/1E1E1E/FFFFFF?text=Unity+Automobile';">
                     </div>
                     <div class="lg:w-1/2">
-                        <!-- PERBAIKAN: Memberi ID untuk diisi oleh JS -->
-                        <h2 id="profile-company-name-about" class="text-3xl sm:text-4xl font-bold accent-dark">Tentang Kami</h2>
+                        <h2 id="profile-company-name-about" class="text-3xl sm:text-4xl font-poppins font-bold accent-dark">Tentang Unity Automobile</h2>
                         <p class="text-gray-500 mt-2 mb-6">Profesional, Terpercaya, dan Berpengalaman Sejak 2003.</p>
                         <p id="profile-about-us" class="text-gray-700 mb-4 leading-relaxed">
-                            Memuat deskripsi perusahaan...
+                            Memuat deskripsi...
                         </p>
-                        <h3 class="text-xl font-semibold accent-dark mb-4 mt-8">Mengapa Memilih Kami?</h3>
+                        <h3 class="text-xl font-poppins font-semibold accent-dark mb-4 mt-8">Mengapa Memilih Kami?</h3>
                         <ul class="space-y-4 text-gray-700">
                             <li class="flex items-start"><i data-feather="check-circle"
                                     class="text-green-500 mr-3 mt-1 flex-shrink-0"></i><span><strong>Kepuasan
@@ -165,21 +157,21 @@
                 </div>
             </div>
         </section>
-
+        
         <!-- Stats Section -->
         <section id="stats" class="py-16 bg-gray-800 text-white">
             <div class="container mx-auto px-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center" data-aos="fade-up">
                     <div>
-                        <h3 class="text-4xl font-bold primary-blue">1,500+</h3>
+                        <h3 class="text-4xl font-poppins font-bold primary-blue">1,500+</h3>
                         <p class="mt-2 font-semibold">Klien Puas</p>
                     </div>
                     <div>
-                        <h3 class="text-4xl font-bold primary-blue">20+</h3>
+                        <h3 class="text-4xl font-poppins font-bold primary-blue">20+</h3>
                         <p class="mt-2 font-semibold">Tahun Pengalaman</p>
                     </div>
                     <div>
-                        <h3 class="text-4xl font-bold primary-blue" id="insurance-count">10+</h3>
+                        <h3 class="text-4xl font-poppins font-bold primary-blue" id="insurance-count">10+</h3>
                         <p class="mt-2 font-semibold">Asuransi Rekanan</p>
                     </div>
                 </div>
@@ -190,7 +182,7 @@
         <section id="layanan" class="py-16 md:py-24 bg-gray-50">
             <div class="container mx-auto px-6" data-aos="fade-up">
                 <div class="text-center mb-12">
-                    <h2 class="text-3xl sm:text-4xl font-bold accent-dark">Layanan Profesional Kami</h2>
+                    <h2 class="text-3xl sm:text-4xl font-poppins font-bold accent-dark">Layanan Profesional Kami</h2>
                     <p class="text-gray-600 mt-2 max-w-2xl mx-auto">Kami menyediakan solusi lengkap untuk semua
                         kebutuhan kendaraan Anda, dari perbaikan ringan hingga restorasi penuh.</p>
                 </div>
@@ -204,7 +196,7 @@
         <section id="asuransi" class="py-16 md:py-24 bg-white">
             <div class="container mx-auto px-6" data-aos="fade-up">
                 <div class="text-center mb-12">
-                    <h2 class="text-3xl sm:text-4xl font-bold accent-dark">Rekanan Asuransi Kami</h2>
+                    <h2 class="text-3xl sm:text-4xl font-poppins font-bold accent-dark">Rekanan Asuransi Kami</h2>
                     <p class="text-gray-600 mt-2">Kami bekerja sama dengan berbagai perusahaan asuransi terkemuka.</p>
                 </div>
                 <div id="insurance-list"
@@ -218,7 +210,7 @@
         <section id="galeri" class="py-16 md:py-24 bg-gray-50">
             <div class="container mx-auto px-6" data-aos="fade-up">
                 <div class="text-center mb-12">
-                    <h2 class="text-3xl sm:text-4xl font-bold accent-dark">Galeri Pengerjaan</h2>
+                    <h2 class="text-3xl sm:text-4xl font-poppins font-bold accent-dark">Galeri Pengerjaan</h2>
                     <p class="text-gray-600 mt-2">Lihat hasil kerja dan fasilitas modern kami.</p>
                 </div>
                 <div id="gallery-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -231,7 +223,7 @@
         <section id="testimoni" class="py-16 md:py-24 bg-white">
             <div class="container mx-auto px-6" data-aos="fade-up">
                 <div class="text-center mb-12">
-                    <h2 class="text-3xl sm:text-4xl font-bold accent-dark">Testimoni Pelanggan</h2>
+                    <h2 class="text-3xl sm:text-4xl font-poppins font-bold accent-dark">Testimoni Pelanggan</h2>
                     <p class="text-gray-600 mt-2">Apa kata mereka tentang layanan kami.</p>
                 </div>
                 <div id="testimonial-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
@@ -245,8 +237,34 @@
                 </div>
                 <div id="testimonial-form-container"
                     class="hidden max-w-2xl mx-auto bg-gray-50 p-8 rounded-lg shadow-inner mt-12 transition-all">
-                    <h3 class="text-2xl font-bold text-center accent-dark mb-6">Bagikan Pengalaman Anda</h3>
-                    <form id="testimonial-form"><!-- Form fields... --></form>
+                    <h3 class="text-2xl font-poppins font-bold text-center accent-dark mb-6">Bagikan Pengalaman Anda</h3>
+                    <form id="testimonial-form">
+                        <div class="mb-4">
+                            <label for="nama" class="block text-gray-700 font-semibold mb-2">Nama Anda</label>
+                            <input type="text" id="nama" name="nama"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-semibold mb-2">Rating</label>
+                            <div id="star-rating"
+                                class="flex items-center space-x-1 text-3xl text-gray-300 cursor-pointer">
+                                <span data-value="1">★</span><span data-value="2">★</span><span
+                                    data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+                            </div>
+                            <input type="hidden" id="rating-value" name="rating" required>
+                        </div>
+                        <div class="mb-6">
+                            <label for="pesan" class="block text-gray-700 font-semibold mb-2">Testimoni Anda</label>
+                            <textarea id="pesan" name="pesan" rows="4"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required></textarea>
+                        </div>
+                        <button type="submit" id="submit-testimonial-btn"
+                            class="w-full bg-green-500 text-white py-3 px-6 rounded-lg font-bold hover:bg-green-600 transition-all duration-300">
+                            Kirim Testimoni
+                        </button>
+                    </form>
                 </div>
             </div>
         </section>
@@ -255,11 +273,9 @@
         <section id="lokasi" class="py-16 md:py-24">
             <div class="container mx-auto px-6" data-aos="fade-up">
                 <div class="text-center mb-12">
-                    <h2 class="text-3xl sm:text-4xl font-bold accent-dark">Kunjungi Kami</h2>
-                    <!-- PERBAIKAN: Memberi ID untuk diisi oleh JS -->
+                    <h2 class="text-3xl sm:text-4xl font-poppins font-bold accent-dark">Kunjungi Kami</h2>
                     <p id="profile-address-map" class="text-gray-600 mt-2">Memuat alamat...</p>
                 </div>
-                <!-- PERBAIKAN: Memberi ID untuk diisi oleh JS -->
                 <div id="map-container" class="aspect-w-16 aspect-h-9 rounded-lg shadow-xl overflow-hidden">
                     <p class="text-center p-8">Memuat peta...</p>
                 </div>
@@ -273,7 +289,41 @@
         </section>
 
         <!-- Kontak WhatsApp Form -->
-        <section id="kontak-form" class="py-16 md:py-24 bg-accent-dark text-white"><!-- ... --></section>
+        <section id="kontak-form" class="py-16 md:py-24 bg-accent-dark text-white">
+            <div class="container mx-auto px-6 max-w-2xl text-center" data-aos="fade-up">
+                <h2 class="text-3xl sm:text-4xl font-poppins font-bold">Punya Pertanyaan?</h2>
+                <p class="text-gray-300 mt-2 mb-8 mx-auto">Hubungi kami melalui WhatsApp untuk konsultasi cepat atau
+                    penjadwalan layanan. Isi form di bawah ini.</p>
+                <div class="bg-white rounded-lg shadow-xl p-8 text-gray-800">
+                    <form id="wa-form">
+                        <div class="mb-4">
+                            <label for="wa-nama" class="block text-gray-700 font-semibold mb-2 text-left">Nama</label>
+                            <input type="text" id="wa-nama"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-primary-blue"
+                                required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="wa-no" class="block text-gray-700 font-semibold mb-2 text-left">Nomor
+                                WhatsApp</label>
+                            <input type="tel" id="wa-no"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-primary-blue"
+                                placeholder="Contoh: 08123456789" required>
+                        </div>
+                        <div class="mb-6">
+                            <label for="wa-pesan" class="block text-gray-700 font-semibold mb-2 text-left">Pesan
+                                Singkat</label>
+                            <textarea id="wa-pesan" rows="3"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-primary-blue"
+                                placeholder="Contoh: Saya ingin bertanya tentang body repair." required></textarea>
+                        </div>
+                        <button type="submit" id="send-wa-btn"
+                            class="w-full bg-green-500 text-white py-3 px-6 rounded-lg font-bold hover:bg-green-600 transition-all duration-300 flex items-center justify-center">
+                            <i data-feather="message-circle" class="mr-2"></i> Kirim ke WhatsApp
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -281,15 +331,13 @@
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                    <!-- PERBAIKAN: Memberi ID untuk diisi oleh JS -->
-                    <h3 id="footer-logo" class='text-lg font-bold text-white mb-4'>Memuat...</h3>
+                    <h3 id="footer-logo" class='text-lg font-poppins font-bold text-white mb-4'>UNITY AUTOMOBILE</h3>
                     <p class="text-sm">Bengkel rekanan asuransi terpercaya di Medan, menyediakan layanan berkualitas
                         dengan teknisi berpengalaman dan peralatan modern.</p>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-white mb-4">Informasi Kontak</h3>
+                    <h3 class="text-lg font-poppins font-bold text-white mb-4">Informasi Kontak</h3>
                     <ul class="space-y-2 text-sm">
-                        <!-- PERBAIKAN: Memberi ID untuk diisi oleh JS -->
                         <li class="flex items-start"><i data-feather="map-pin"
                                 class="w-4 h-4 mr-3 mt-1 flex-shrink-0"></i><span id="footer-address">Memuat...</span></li>
                         <li class="flex items-start"><i data-feather="phone"
@@ -299,9 +347,8 @@
                     </ul>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-white mb-4">Jam Operasional</h3>
+                    <h3 class="text-lg font-poppins font-bold text-white mb-4">Jam Operasional</h3>
                     <ul class="space-y-2 text-sm">
-                        <!-- PERBAIKAN: Memberi ID untuk diisi oleh JS -->
                         <li id="footer-weekdays">Memuat...</li>
                         <li id="footer-weekend">Memuat...</li>
                     </ul>
@@ -309,17 +356,244 @@
             </div>
             <div
                 class="mt-8 border-t border-gray-800 pt-8 flex flex-col sm:flex-row justify-between items-center text-sm">
-                <!-- PERBAIKAN: Memberi ID untuk diisi oleh JS -->
                 <p>&copy; <span id="current-year"></span> <span id="footer-company-name">Unity Automobile</span>. All Rights Reserved.</p>
                 <p class="mt-4 sm:mt-0">Total Pengunjung: <span id="visitor-count" class="font-bold">Memuat...</span>
                 </p>
             </div>
         </div>
     </footer>
-
+    
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-    <!-- PERBAIKAN: Menautkan ke file script.js yang terpisah -->
-    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const SUPABASE_URL = 'https://fbuwyproxqmkuwncyxmf.supabase.co';
+            // PERINGATAN PENTING: Anda masih menggunakan service_role key. Ini sangat tidak aman untuk production.
+            // Harap ganti dengan kunci 'anon' (public) dari pengaturan API Supabase Anda.
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZidXd5cHJveHFta3V3bmN5eG1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg3ODIxMjUsImV4cCI6MjA2NDM1ODEyNX0.VnWPO81M9Fjf7T_syejephC65B93pqA9QXKzRUa4_ho';
+
+            function initApp() {
+                if (SUPABASE_URL.includes('ganti-dengan-url-supabase-anda')) {
+                    document.body.innerHTML = `<div style="font-family: sans-serif; background-color: #ffcccc; color: #a80000; text-align: center; padding: 40px; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;"><h1 style="font-size: 2em; margin-bottom: 20px;">Kesalahan Konfigurasi</h1><p style="font-size: 1.2em;">Website belum terhubung ke database.</p><p style="margin-top: 10px;">Harap ganti placeholder <strong>SUPABASE_URL</strong> dan <strong>SUPABASE_ANON_KEY</strong> di dalam kode.</p></div>`;
+                    return;
+                }
+                const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                feather.replace();
+                AOS.init({ duration: 800, once: true, offset: 50 });
+
+                document.getElementById('current-year').textContent = new Date().getFullYear();
+                const mobileMenu = document.getElementById('mobile-menu');
+                document.getElementById('mobile-menu-button').addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+                });
+                
+                loadCompanyProfile(supabaseClient);
+                loadServices(supabaseClient);
+                incrementAndShowVisitorCount(supabaseClient);
+                loadInsurancePartners(supabaseClient);
+                loadGallery(supabaseClient);
+                loadTestimonials(supabaseClient);
+                setupTestimonialForm(supabaseClient);
+                setupWhatsAppForm(supabaseClient);
+                setupShareLocation();
+            }
+
+            async function loadCompanyProfile(supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient.from('company_profile').select('*').eq('id', 1).single();
+                    if (error) throw error;
+                    if (!data) return;
+
+                    window.WORKSHOP_WA_NUMBER = data.whatsapp_number;
+                    // document.getElementById('header-logo').innerHTML = `${data.company_name}<span class="primary-blue">Automobile</span>`;
+                    document.getElementById('profile-company-name-hero').textContent = data.company_name.toUpperCase();
+                    document.getElementById('profile-tagline').textContent = data.tagline;
+                    document.getElementById('profile-company-name-about').textContent = `Tentang ${data.company_name}`;
+                    document.getElementById('profile-about-us').textContent = data.about_us;
+                    document.getElementById('profile-address-map').textContent = data.address;
+                    document.getElementById('map-container').innerHTML = `<iframe src="${data.map_embed_url}" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+                    document.getElementById('footer-logo').textContent = data.company_name.toUpperCase();
+                    document.getElementById('footer-address').textContent = data.address;
+                    document.getElementById('footer-phone').textContent = data.phone_number;
+                    document.getElementById('footer-email').textContent = data.email;
+                    document.getElementById('footer-weekdays').textContent = data.operating_hours_weekdays;
+                    document.getElementById('footer-weekend').textContent = data.operating_hours_weekend;
+                    document.getElementById('footer-company-name').textContent = data.company_name;
+                    feather.replace();
+                } catch (error) {
+                    console.error("Gagal memuat profil usaha:", error.message);
+                }
+            }
+
+            async function loadServices(supabaseClient) {
+                const container = document.getElementById('services-container');
+                container.innerHTML = '<p class="col-span-full text-center">Memuat layanan...</p>';
+                try {
+                    const { data, error } = await supabaseClient.from('services').select('*').order('created_at');
+                    if (error) throw error;
+                    container.innerHTML = '';
+                    if (data.length > 0) {
+                        data.forEach(service => {
+                            container.innerHTML += `
+                                <div class="bg-white p-8 rounded-lg service-card text-center">
+                                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 inline-flex p-4 rounded-full text-white mb-4 shadow-lg">
+                                        <i data-feather="${service.icon_name || 'settings'}" class="h-8 w-8"></i>
+                                    </div>
+                                    <h3 class="text-xl font-bold accent-dark mb-2">${service.name}</h3>
+                                    <p class="text-gray-600">${service.description}</p>
+                                </div>`;
+                        });
+                        feather.replace();
+                    } else {
+                        container.innerHTML = '<p class="col-span-full text-center">Belum ada layanan yang tersedia.</p>';
+                    }
+                } catch (error) {
+                    container.innerHTML = '<p class="col-span-full text-center text-red-500">Gagal memuat layanan.</p>';
+                }
+            }
+            
+            async function incrementAndShowVisitorCount(supabaseClient) {
+                const el = document.getElementById('visitor-count');
+                try {
+                    const { data, error } = await supabaseClient.rpc('increment_visitor_count');
+                    if (error) throw error;
+                    el.textContent = data;
+                } catch (error) {
+                    el.textContent = 'N/A';
+                }
+            }
+
+            async function loadInsurancePartners(supabaseClient) {
+                const listEl = document.getElementById('insurance-list');
+                const countEl = document.getElementById('insurance-count');
+                listEl.innerHTML = '<p class="col-span-full text-center">Memuat rekanan...</p>';
+                try {
+                    const { data, error, count } = await supabaseClient.from('insurance_partners').select('*', { count: 'exact' });
+                    if(error) throw error;
+                    if(countEl) countEl.textContent = `${count}+`;
+                    listEl.innerHTML = '';
+                    if(data.length > 0) data.forEach(p => listEl.innerHTML += `<div class="flex justify-center items-center transform transition-transform duration-300 hover:scale-110"><img src="${p.logo_url}" alt="${p.name}" class="h-12 md:h-16" onerror="this.style.display='none'"></div>`);
+                    else listEl.innerHTML = '<p class="col-span-full text-center">Belum ada rekanan.</p>';
+                } catch(error) {
+                    listEl.innerHTML = '<p class="col-span-full text-center text-red-500">Gagal memuat rekanan.</p>';
+                }
+            }
+
+            async function loadGallery(supabaseClient) {
+                const el = document.getElementById('gallery-container');
+                el.innerHTML = '<p class="col-span-full text-center">Memuat galeri...</p>';
+                try {
+                    const { data, error } = await supabaseClient.from('gallery_images').select('*').order('created_at', { ascending: false }).limit(6);
+                    if (error) throw error;
+                    el.innerHTML = '';
+                    if (data.length > 0) {
+                        data.forEach(f => el.innerHTML += `<div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden group shadow-lg"><img src="${f.image_url}" alt="${f.title||''}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.onerror=null;this.src='https://placehold.co/400x300?text=Error';"></div>`);
+                    } else {
+                        el.innerHTML = '<p class="col-span-full text-center">Galeri masih kosong.</p>';
+                    }
+                } catch (error) {
+                    el.innerHTML = '<p class="col-span-full text-center text-red-500">Gagal memuat galeri.</p>';
+                }
+            }
+        
+            async function loadTestimonials(supabaseClient) {
+                const el = document.getElementById('testimonial-list');
+                el.innerHTML = '<p class="col-span-full text-center">Memuat testimoni...</p>';
+                try {
+                    const { data, error } = await supabaseClient.from('testimonials').select('*').order('created_at', { ascending: false }).limit(6);
+                    if (error) throw error;
+                    el.innerHTML = '';
+                    if (data.length > 0) {
+                        data.forEach(t => {
+                            const stars = '★'.repeat(t.rating) + '☆'.repeat(5-t.rating);
+                            el.innerHTML += `<div class="bg-white p-6 rounded-lg testimonial-card"><div class="flex items-center mb-4"><div class="w-12 h-12 rounded-full bg-primary-blue text-white flex items-center justify-center font-bold text-xl mr-4 shrink-0">${t.name.charAt(0).toUpperCase()}</div><div><h4 class="font-bold accent-dark">${t.name}</h4><div class="text-yellow-400 text-lg">${stars}</div></div></div><p class="text-gray-600 italic">"${t.message}"</p></div>`;
+                        });
+                    } else {
+                         el.innerHTML = '<p class="col-span-full text-center">Jadilah yang pertama memberikan testimoni!</p>';
+                    }
+                } catch (error) {
+                     el.innerHTML = '<p class="col-span-full text-center text-red-500">Gagal memuat testimoni.</p>';
+                }
+            }
+            
+            function setupTestimonialForm(supabaseClient) {
+                const showBtn = document.getElementById('show-testimonial-form-btn');
+                const formContainer = document.getElementById('testimonial-form-container');
+                if(!showBtn || !formContainer) return;
+                const form = document.getElementById('testimonial-form');
+                const stars = document.querySelectorAll('#star-rating span');
+                const ratingValueInput = document.getElementById('rating-value');
+                const submitBtn = document.getElementById('submit-testimonial-btn');
+                showBtn.addEventListener('click', () => {
+                    formContainer.classList.remove('hidden');
+                    formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    showBtn.classList.add('hidden');
+                });
+                stars.forEach(star => star.addEventListener('click', () => {
+                    const value = star.getAttribute('data-value');
+                    ratingValueInput.value = value;
+                    stars.forEach(s => {
+                        s.classList.toggle('text-yellow-400', s.getAttribute('data-value') <= value);
+                        s.classList.toggle('text-gray-300', s.getAttribute('data-value') > value);
+                    });
+                }));
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    if (!ratingValueInput.value) { alert("Harap berikan rating bintang."); return; }
+                    setLoading(submitBtn, true);
+                    const { error } = await supabaseClient.from('testimonials').insert([{ name: form.nama.value, rating: form.rating.value, message: form.pesan.value }]);
+                    setLoading(submitBtn, false);
+                    if (error) { alert('Maaf, terjadi kesalahan.'); } 
+                    else {
+                        alert('Terima kasih! Testimoni Anda telah diterima.');
+                        form.reset();
+                        ratingValueInput.value = '';
+                        stars.forEach(s => s.classList.replace('text-yellow-400', 'text-gray-300'));
+                        formContainer.classList.add('hidden');
+                        showBtn.classList.remove('hidden');
+                        loadTestimonials(supabaseClient);
+                    }
+                });
+            }
+
+            function setupWhatsAppForm(supabaseClient) {
+                const waForm = document.getElementById('wa-form');
+                if(!waForm) return;
+                const sendBtn = document.getElementById('send-wa-btn');
+                waForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    setLoading(sendBtn, true);
+                    const name = waForm['wa-nama'].value, phone = waForm['wa-no'].value, message = waForm['wa-pesan'].value;
+                    try { await supabaseClient.from('contacts').insert([{ name, phone, message }]); }
+                    catch(error) { console.error('Error saving contact:', error.message); }
+                    const waMessage = `Halo Unity Automobile,\n\nNama: *${name}*\nNo. WA: *${phone}*\n\nPesan:\n${message}`;
+                    const encodedMessage = encodeURIComponent(waMessage);
+                    window.open(`https://api.whatsapp.com/send?phone=${window.WORKSHOP_WA_NUMBER || '628123456789'}&text=${encodedMessage}`, '_blank');
+                    setLoading(sendBtn, false);
+                    waForm.reset();
+                });
+            }
+
+            function setupShareLocation() {
+                const shareBtn = document.getElementById('share-location-btn');
+                if(!shareBtn) return;
+                shareBtn.addEventListener('click', () => {
+                    const locationUrl = 'https://maps.app.goo.gl/wQhCfhT1E3gXJqYV6'; 
+                    const shareData = { title: 'Lokasi Unity Automobile', text: 'Kunjungi Unity Automobile di Medan.', url: locationUrl };
+                    if (navigator.share) navigator.share(shareData).catch(console.error);
+                    else navigator.clipboard.writeText(locationUrl).then(() => alert('Lokasi disalin!'));
+                });
+            }
+            
+            function setLoading(button, isLoading) {
+                button.classList.toggle('btn-loading', isLoading);
+                button.disabled = isLoading;
+            }
+
+            initApp();
+        });
+    </script>
 </body>
 
 </html>
