@@ -1,0 +1,71 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8fafc;
+    /* Slightly cooler gray */
+    scroll-behavior: smooth;
+}
+
+.primary-blue {
+    color: #0A74DA;
+}
+
+.bg-primary-blue {
+    background-color: #0A74DA;
+}
+
+.border-primary-blue {
+    border-color: #0A74DA;
+}
+
+.accent-dark {
+    color: #1E1E1E;
+}
+
+.bg-accent-dark {
+    background-color: #1E1E1E;
+}
+
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url('https://images.unsplash.com/photo-1541348263662-e384218d6a1d?q=80&w=1974&auto=format&fit=crop') no-repeat center center;
+    background-size: cover;
+}
+
+.testimonial-card,
+.service-card {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
