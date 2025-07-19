@@ -365,6 +365,10 @@
     
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      </script>
+      <script defer src="/_vercel/insights/script.js"></script>
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const SUPABASE_URL = 'https://fbuwyproxqmkuwncyxmf.supabase.co';
             // PERINGATAN PENTING: Anda masih menggunakan service_role key. Ini sangat tidak aman untuk production.
@@ -569,7 +573,7 @@
                     catch(error) { console.error('Error saving contact:', error.message); }
                     const waMessage = `Halo Unity Automobile,\n\nNama: *${name}*\nNo. WA: *${phone}*\n\nPesan:\n${message}`;
                     const encodedMessage = encodeURIComponent(waMessage);
-                    window.open(`https://api.whatsapp.com/send?phone=${window.WORKSHOP_WA_NUMBER || '628123456789'}&text=${encodedMessage}`, '_blank');
+                    window.open(`https://api.whatsapp.com/send?phone=${window.WORKSHOP_WA_NUMBER || '6285372336699'}&text=${encodedMessage}`, '_blank');
                     setLoading(sendBtn, false);
                     waForm.reset();
                 });
