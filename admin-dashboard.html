@@ -5,242 +5,213 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Unity Automobile</title>
     
-    <!-- Tailwind CSS, Google Fonts, Supabase JS, Feather Icons -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+
+    <!-- Google Fonts, Supabase JS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
     <link rel="icon" type="image/png" href="/unity.png">
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #F8F9FA; }
-        .primary-blue { color: #0A74DA; } .bg-primary-blue { background-color: #0A74DA; }
-        .accent-dark { color: #1E1E1E; }
-        .sidebar-link.active { background-color: #0A74DA; color: white; font-weight: 600; }
-        .sidebar-link.active i { color: white; }
-        .btn-loading { position: relative; pointer-events: none; color: transparent !important; }
-        .btn-loading::after { content: ''; position: absolute; left: 50%; top: 50%; width: 20px; height: 20px; margin-left: -10px; margin-top: -10px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f4f6f9;
+        }
+        #sidebar {
+            min-height: 100vh;
+            background-color: #fff;
+            box-shadow: 0 0 2rem 0 rgba(0,0,0,.05);
+        }
+        .nav-link {
+            color: #555;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        .nav-link .bi {
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+            color: #888;
+        }
+        .nav-link.active, .nav-link:hover {
+            background-color: #0d6efd;
+            color: #fff;
+            border-radius: 0.5rem;
+        }
+        .nav-link.active .bi, .nav-link:hover .bi {
+            color: #fff;
+        }
+        .btn-loading { 
+            position: relative; 
+            pointer-events: none; 
+            color: transparent !important; 
+        }
+        .btn-loading::after { 
+            content: ''; 
+            position: absolute; 
+            left: 50%; 
+            top: 50%; 
+            width: 20px; 
+            height: 20px; 
+            margin-left: -10px; 
+            margin-top: -10px; 
+            border: 2px solid #fff; 
+            border-top-color: transparent; 
+            border-radius: 50%; 
+            animation: spin 0.6s linear infinite; 
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .stat-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
-        label { margin-bottom: 0.5rem; display: block; font-weight: 500; color: #374151; }
-        input[type="text"], input[type="email"], input[type="url"], textarea { margin-top: 0.25rem !important; }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                top: 0;
+                left: -280px;
+                width: 280px;
+                z-index: 1030;
+                transition: left 0.3s ease;
+            }
+            #sidebar.active {
+                left: 0;
+            }
+            #content {
+                width: 100%;
+            }
+            #sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
+                z-index: 1029;
+                display: none;
+            }
+            #sidebar-overlay.active {
+                display: block;
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-100">
-    <div id="app-container" class="flex h-screen bg-gray-200">
+<body>
+    <div class="d-flex">
+        <div id="sidebar-overlay"></div>
         <!-- Sidebar -->
-        <div id="sidebar" class="w-64 bg-white shadow-md flex-shrink-0">
-            <div class="p-6">
-                <a href="#" class="text-2xl font-bold accent-dark">Unity Automobile</a>
-                <p class="text-sm text-gray-500">Admin Panel</p>
+        <div id="sidebar" class="d-flex flex-column flex-shrink-0 p-3">
+            <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+                <span class="fs-4">Unity Automobile</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
+                <li class="nav-item mb-1"><a href="#" class="nav-link active" data-section="profile"><i class="bi bi-person-badge"></i>Profil Usaha</a></li>
+                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="services"><i class="bi bi-tools"></i>Layanan</a></li>
+                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="testimonials"><i class="bi bi-chat-quote"></i>Testimoni</a></li>
+                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="gallery"><i class="bi bi-images"></i>Galeri</a></li>
+                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="insurance"><i class="bi bi-shield-check"></i>Asuransi</a></li>
+                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="contacts"><i class="bi bi-telephone-inbound"></i>Kontak Masuk</a></li>
+            </ul>
+            <hr>
+            <div>
+                <button id="logout-button" class="btn btn-outline-danger w-100">Sign out</button>
             </div>
-            <nav class="mt-6">
-                <a href="#" class="sidebar-link active flex items-center py-3 px-6 text-gray-700 hover:bg-gray-200" data-section="profile">
-                    <i data-feather="settings" class="mr-3"></i> Profil Usaha
-                </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 text-gray-700 hover:bg-gray-200" data-section="dashboard">
-                    <i data-feather="home" class="mr-3"></i> Dashboard
-                </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 text-gray-700 hover:bg-gray-200" data-section="services">
-                    <i data-feather="briefcase" class="mr-3"></i> Layanan
-                </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 text-gray-700 hover:bg-gray-200" data-section="testimonials">
-                    <i data-feather="message-square" class="mr-3"></i> Testimoni
-                </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 text-gray-700 hover:bg-gray-200" data-section="gallery">
-                    <i data-feather="image" class="mr-3"></i> Galeri
-                </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 text-gray-700 hover:bg-gray-200" data-section="insurance">
-                    <i data-feather="shield" class="mr-3"></i> Asuransi
-                </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 text-gray-700 hover:bg-gray-200" data-section="contacts">
-                    <i data-feather="phone-incoming" class="mr-3"></i> Kontak Masuk
-                </a>
-            </nav>
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header -->
-            <header class="flex justify-between items-center p-6 bg-white border-b">
-                <div>
-                    <h2 id="section-title" class="text-2xl font-semibold text-gray-800">Profil Usaha</h2>
-                </div>
-                <div class="flex items-center">
-                    <span id="admin-email" class="text-sm text-gray-600 mr-4"></span>
-                    <button id="logout-button" class="flex items-center text-sm text-red-500 hover:text-red-700">
-                        <i data-feather="log-out" class="w-4 h-4 mr-1"></i> Logout
+        <div id="content" class="w-100">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" id="sidebar-toggle">
+                        <span class="navbar-toggler-icon"></span>
                     </button>
+                    <h2 id="section-title" class="fs-5 mb-0">Profil Usaha</h2>
+                    <div class="ms-auto text-muted" id="admin-email"></div>
                 </div>
-            </header>
-            
-            <!-- Content Area -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
-                <div id="notification" class="hidden mb-4 p-4 rounded-md"></div>
+            </nav>
+            <main class="p-4">
+                <div id="notification" class="alert d-none mb-4"></div>
                 
                 <!-- Sections -->
-                <div id="profile-section" class="content-section">
-                    <div class="bg-white p-8 rounded-lg shadow-md">
-                        <form id="profile-form">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="company_name">Nama Bengkel</label>
-                                    <input type="text" id="company_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                </div>
-                                <div>
-                                    <label for="tagline">Tagline</label>
-                                    <input type="text" id="tagline" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                </div>
-                                <div class="md:col-span-2">
-                                    <label for="about_us">Tentang Kami (Deskripsi)</label>
-                                    <textarea id="about_us" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
-                                </div>
-                                <div>
-                                    <label for="phone_number">No. Telepon</label>
-                                    <input type="text" id="phone_number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                </div>
-                                <div>
-                                    <label for="whatsapp_number">No. WhatsApp (Format 62)</label>
-                                    <input type="text" id="whatsapp_number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                </div>
-                                <div class="md:col-span-2">
-                                    <label for="email">Email</label>
-                                    <input type="email" id="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                </div>
-                                <div class="md:col-span-2">
-                                    <label for="address">Alamat Lengkap</label>
-                                    <textarea id="address" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
-                                </div>
-                                <div>
-                                    <label for="operating_hours_weekdays">Jam Buka (Hari Kerja)</label>
-                                    <input type="text" id="operating_hours_weekdays" placeholder="Senin - Jumat: 08.30 - 17.30" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                </div>
-                                <div>
-                                    <label for="operating_hours_weekend">Jam Buka (Akhir Pekan)</label>
-                                    <input type="text" id="operating_hours_weekend" placeholder="Sabtu & Minggu: Tutup" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                </div>
-                                <div class="md:col-span-2">
-                                    <label for="map_embed_url">URL Embed Google Maps</label>
-                                    <textarea id="map_embed_url" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm font-mono text-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
-                                </div>
-                            </div>
-                            <div class="mt-6 text-right">
-                                <button type="submit" id="save-profile-btn" class="bg-primary-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-opacity-90">Simpan Perubahan</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div id="dashboard-section" class="content-section hidden">
-                    <h3 class="text-xl font-semibold mb-4">Ringkasan Data</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div class="stat-card bg-white p-6 rounded-lg shadow-md flex items-center">
-                            <div class="p-3 rounded-full bg-blue-100 text-blue-500 mr-4"><i data-feather="briefcase"></i></div>
-                            <div><p class="text-sm font-medium text-gray-500">Total Layanan</p><p id="stats-services" class="text-2xl font-bold">0</p></div>
-                        </div>
-                        <div class="stat-card bg-white p-6 rounded-lg shadow-md flex items-center">
-                            <div class="p-3 rounded-full bg-green-100 text-green-500 mr-4"><i data-feather="message-square"></i></div>
-                            <div><p class="text-sm font-medium text-gray-500">Total Testimoni</p><p id="stats-testimonials" class="text-2xl font-bold">0</p></div>
-                        </div>
-                        <div class="stat-card bg-white p-6 rounded-lg shadow-md flex items-center">
-                            <div class="p-3 rounded-full bg-indigo-100 text-indigo-500 mr-4"><i data-feather="image"></i></div>
-                            <div><p class="text-sm font-medium text-gray-500">Total Galeri</p><p id="stats-gallery" class="text-2xl font-bold">0</p></div>
-                        </div>
-                        <div class="stat-card bg-white p-6 rounded-lg shadow-md flex items-center">
-                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-500 mr-4"><i data-feather="shield"></i></div>
-                            <div><p class="text-sm font-medium text-gray-500">Total Asuransi</p><p id="stats-insurance" class="text-2xl font-bold">0</p></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="services-section" class="content-section hidden">
-                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h3 class="text-xl font-semibold mb-4">Tambah Layanan Baru</h3>
-                        <form id="service-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="service-name">Nama Layanan</label>
-                                <input type="text" id="service-name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                            </div>
-                            <div>
-                                <label for="service-icon">Nama Ikon (<a href="https://feathericons.com/" target="_blank" class="text-blue-500 hover:underline">Feather Icons</a>)</label>
-                                <input type="text" id="service-icon" placeholder="Contoh: tool" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                            </div>
-                            <div class="md:col-span-2">
-                                <label for="service-desc">Deskripsi Singkat</label>
-                                <textarea id="service-desc" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                            </div>
-                            <div class="md:col-span-2">
-                                <button type="submit" id="add-service-btn" class="w-full sm:w-auto bg-primary-blue text-white px-4 py-2 rounded-lg font-semibold hover:bg-opacity-90">Tambah Layanan</button>
-                            </div>
-                        </form>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-4 mt-8">Daftar Layanan Saat Ini</h3>
-                    <div id="service-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                </div>
-
-                <div id="testimonials-section" class="content-section hidden">
-                    <div id="testimonial-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                </div>
-
-                <div id="gallery-section" class="content-section hidden">
-                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h3 class="text-xl font-semibold mb-4">Tambah Gambar Galeri Baru</h3>
-                        <form id="gallery-form">
-                           <div class="mb-4">
-                                <label for="gallery-title">Judul Gambar</label>
-                                <input type="text" id="gallery-title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                            </div>
-                            <div class="mb-4">
-                                <label for="gallery-file">File Gambar</label>
-                                <input type="file" id="gallery-file" accept="image/*" required class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                            </div>
-                            <button type="submit" id="upload-gallery-btn" class="w-full sm:w-auto bg-primary-blue text-white px-4 py-2 rounded-lg font-semibold hover:bg-opacity-90">Unggah Gambar</button>
-                        </form>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-4 mt-8">Gambar di Galeri</h3>
-                    <div id="gallery-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-                </div>
-
-                <div id="insurance-section" class="content-section hidden">
-                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h3 class="text-xl font-semibold mb-4">Tambah Asuransi</h3>
-                        <form id="insurance-form">
-                            <div class="mb-4">
-                                <label for="insurance-name">Nama Perusahaan</label>
-                                <input type="text" id="insurance-name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                            </div>
-                            <div class="mb-4">
-                                <label for="insurance-logo-url">URL Logo</label>
-                                <input type="url" id="insurance-logo-url" placeholder="https://example.com/logo.png" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                            </div>
-                            <button type="submit" id="add-insurance-btn" class="w-full sm:w-auto bg-primary-blue text-white px-4 py-2 rounded-lg font-semibold hover:bg-opacity-90">Tambah Asuransi</button>
-                        </form>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-4 mt-8">Rekanan Asuransi</h3>
-                    <div id="insurance-list" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6"></div>
-                </div>
-
-                 <div id="contacts-section" class="content-section hidden">
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                        <table class="min-w-full"><thead class="bg-gray-50"><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telepon</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pesan</th></tr></thead><tbody id="contact-list" class="bg-white divide-y divide-gray-200"></tbody></table>
-                    </div>
-                </div>
+                <div id="profile-section" class="content-section"></div>
+                <div id="dashboard-section" class="content-section d-none"></div>
+                <div id="services-section" class="content-section d-none"></div>
+                <div id="testimonials-section" class="content-section d-none"></div>
+                <div id="gallery-section" class="content-section d-none"></div>
+                <div id="insurance-section" class="content-section d-none"></div>
+                <div id="contacts-section" class="content-section d-none"></div>
             </main>
         </div>
     </div>
 
+    <!-- Modals -->
+    <div class="modal fade" id="gallery-edit-modal" tabindex="-1" aria-labelledby="galleryEditModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="galleryEditModalLabel">Edit Judul Gambar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="gallery-edit-form">
+                        <input type="hidden" id="edit-gallery-id">
+                        <div class="mb-3">
+                            <label for="edit-gallery-title" class="form-label">Judul Gambar</label>
+                            <input type="text" id="edit-gallery-title" class="form-control">
+                        </div>
+                        <button type="submit" id="save-gallery-changes-btn" class="btn btn-primary">Simpan Perubahan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="insurance-edit-modal" tabindex="-1" aria-labelledby="insuranceEditModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="insuranceEditModalLabel">Edit Rekanan Asuransi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="insurance-edit-form">
+                        <input type="hidden" id="edit-insurance-id">
+                        <div class="mb-3">
+                            <label for="edit-insurance-name" class="form-label">Nama Perusahaan</label>
+                            <input type="text" id="edit-insurance-name" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-insurance-logo-url" class="form-label">URL Logo</label>
+                            <input type="url" id="edit-insurance-logo-url" class="form-control">
+                        </div>
+                        <button type="submit" id="save-insurance-changes-btn" class="btn btn-primary">Simpan Perubahan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const SUPABASE_URL = 'https://fbuwyproxqmkuwncyxmf.supabase.co'; 
-            // PERINGATAN KEAMANAN: Kunci Anda adalah 'service_role'. Ini sangat berbahaya untuk digunakan di frontend.
-            // Siapapun bisa mendapatkan akses penuh ke database Anda. Ganti dengan kunci 'anon' (public).
             const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZidXd5cHJveHFta3V3bmN5eG1mIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODc4MjEyNSwiZXhwIjoyMDY0MzU4MTI1fQ.3FMS5eJchIRpgS7CcdL7MpsMXWEh_8SyQXxOobUGzYU';
             
             if (!SUPABASE_URL || !SUPABASE_KEY) {
-                document.body.innerHTML = `<div class="w-full h-screen flex items-center justify-center bg-red-100 text-red-700 p-8 text-center">PENTING: Kredensial Supabase belum diisi.</div>`;
+                document.body.innerHTML = `<div class="w-100 vh-100 d-flex align-items-center justify-content-center bg-danger-subtle text-danger-emphasis p-4 text-center">PENTING: Kredensial Supabase belum diisi.</div>`;
                 return;
             }
             const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -250,189 +221,215 @@
                 window.location.replace('admin-login.html');
                 return;
             }
-            feather.replace();
             document.getElementById('admin-email').textContent = session.user.email;
 
-            // -- Global Functions & Utils --
-            function showNotification(message, type = 'success') {
+            // -- Global Utils --
+            const showNotification = (message, type = 'success') => {
                 const el = document.getElementById('notification');
                 el.textContent = message;
-                el.className = 'mb-4 p-4 rounded-md text-white';
-                el.classList.add(type === 'success' ? 'bg-green-500' : 'bg-red-500');
-                el.classList.remove('hidden');
-                setTimeout(() => el.classList.add('hidden'), 4000);
+                el.className = 'alert';
+                el.classList.add(type === 'success' ? 'alert-success' : 'alert-danger');
+                el.classList.remove('d-none');
+                setTimeout(() => el.classList.add('d-none'), 5000);
             }
-            function setLoading(btn, isLoading) {
+            const setLoading = (btn, isLoading) => {
                 btn.classList.toggle('btn-loading', isLoading);
                 btn.disabled = isLoading;
             }
-            async function deleteItem(tableName, id, callback) {
+            const initDataTable = (tableId) => {
+                const table = $(`#${tableId}`);
+                if ($.fn.DataTable.isDataTable(table)) {
+                    table.DataTable().destroy();
+                }
+                table.DataTable({
+                    responsive: true,
+                    order: [[0, 'desc']]
+                });
+            }
+            window.deleteItem = async (tableName, id, callbackName) => {
                 if (!confirm(`Anda yakin ingin menghapus item ini dari tabel ${tableName}?`)) return;
                 const { error } = await supabaseClient.from(tableName).delete().eq('id', id);
-                if (error) showNotification(`Gagal: ${error.message}`, 'error');
-                else { showNotification('Item berhasil dihapus.'); callback(); }
+                if (error) {
+                    showNotification(`Gagal: ${error.message}`, 'error');
+                } else {
+                    showNotification('Item berhasil dihapus.');
+                    if (callbackName && window[callbackName]) {
+                        window[callbackName]();
+                    }
+                }
             }
-            async function deleteStorageItem(bucketName, publicUrl, tableName, id, callback) {
+            window.deleteStorageItem = async (bucketName, publicUrl, tableName, id, callbackName) => {
                 if (!confirm('PERHATIAN: Ini akan menghapus data dari database DAN file dari storage. Lanjutkan?')) return;
                 const filePath = decodeURIComponent(publicUrl.split(`/${bucketName}/`)[1]);
                 await supabaseClient.storage.from(bucketName).remove([filePath]);
-                await deleteItem(tableName, id, callback);
+                await window.deleteItem(tableName, id, callbackName);
             }
-
-            // -- Loaders & Renderers --
-            async function loadProfileData() {
-                const { data, error } = await supabaseClient.from('company_profile').select('*').eq('id', 1).single();
-                if (error && error.code !== 'PGRST116') {
-                    showNotification('Gagal memuat profil usaha.', 'error');
-                    return;
-                }
-                if (data) {
-                    for (const key in data) {
-                        if (document.getElementById(key)) {
-                            document.getElementById(key).value = data[key];
-                        }
-                    }
-                }
-            }
-            async function loadDashboardStats() {
-                const tables = ['services', 'testimonials', 'gallery_images', 'insurance_partners'];
-                for (const table of tables) {
-                    const { count, error } = await supabaseClient.from(table).select('*', { count: 'exact', head: true });
-                    const elId = `stats-${table.replace('_images', '').replace('_partners', '')}`;
-                    if (document.getElementById(elId)) {
-                        document.getElementById(elId).textContent = error ? 'N/A' : count;
-                    }
-                }
-            }
-            async function loadServices() {
-                const listEl = document.getElementById('service-list');
-                listEl.innerHTML = '<p>Memuat layanan...</p>';
-                const { data, error } = await supabaseClient.from('services').select('*').order('created_at');
-                if (error) return listEl.innerHTML = `<p class="text-red-500">Gagal memuat: ${error.message}</p>`;
-                
-                listEl.innerHTML = '';
-                if (data.length > 0) {
-                    data.forEach(item => {
-                        const card = document.createElement('div');
-                        card.className = "bg-white p-4 rounded-lg shadow-md relative";
-                        card.innerHTML = `<div class="flex items-center mb-2"><i data-feather="${item.icon_name}" class="w-6 h-6 mr-3 primary-blue"></i><h4 class="font-bold text-lg">${item.name}</h4></div><p class="text-gray-600 text-sm">${item.description || ''}</p>`;
-                        const deleteBtn = document.createElement('button');
-                        deleteBtn.innerHTML = '&times;';
-                        deleteBtn.className = "absolute top-2 right-2 text-red-500 hover:text-red-700 text-2xl leading-none font-bold";
-                        deleteBtn.onclick = () => deleteItem('services', item.id, loadServices);
-                        card.appendChild(deleteBtn);
-                        listEl.appendChild(card);
-                    });
-                    feather.replace();
+            window.updateContactStatus = async (contactId, newStatus) => {
+                const { data, error } = await supabaseClient.from('contacts').update({ status: newStatus }).eq('id', contactId).select();
+                if (error) {
+                    showNotification(`Gagal update status: ${error.message}. Pastikan kolom 'status' ada di tabel 'contacts'.`, 'error');
                 } else {
-                    listEl.innerHTML = '<p>Belum ada layanan ditambahkan.</p>';
+                    if (data && data.length > 0) {
+                         showNotification(`Status untuk kontak ID ${data[0].id} berhasil diperbarui ke '${data[0].status}'.`, 'success');
+                    } else {
+                        showNotification('Update berhasil, namun data tidak kembali. Kemungkinan RLS atau ID tidak cocok.', 'warning');
+                    }
+                    loadContacts();
                 }
-            }
-            async function loadTestimonials() {
-                const listEl = document.getElementById('testimonial-list');
-                listEl.innerHTML = '<p>Memuat testimoni...</p>';
-                const { data, error } = await supabaseClient.from('testimonials').select('*').order('created_at', { ascending: false });
-                if (error) return listEl.innerHTML = `<p class="text-red-500">Gagal memuat: ${error.message}</p>`;
-                listEl.innerHTML = '';
-                if(data.length > 0) {
-                    data.forEach(item => {
-                        const card = document.createElement('div');
-                        card.className = "bg-white p-4 rounded-lg shadow-md relative";
-                        card.innerHTML = `<p class="font-semibold">${item.name} <span class="text-yellow-400">${'★'.repeat(item.rating)}${'☆'.repeat(5-item.rating)}</span></p><p class="text-gray-600 text-sm italic">"${item.message}"</p>`;
-                        const deleteBtn = document.createElement('button');
-                        deleteBtn.innerHTML = '&times;';
-                        deleteBtn.className = "absolute top-2 right-2 text-red-500 hover:text-red-700 text-2xl leading-none font-bold";
-                        deleteBtn.onclick = () => deleteItem('testimonials', item.id, loadTestimonials);
-                        card.appendChild(deleteBtn);
-                        listEl.appendChild(card);
-                    });
-                } else listEl.innerHTML = '<p>Belum ada testimoni.</p>';
-            }
-            async function loadGallery() {
-                const listEl = document.getElementById('gallery-list');
-                listEl.innerHTML = '<p>Memuat galeri...</p>';
-                const { data, error } = await supabaseClient.from('gallery_images').select('*').order('created_at', { ascending: false });
-                if (error) return listEl.innerHTML = `<p class="text-red-500">Gagal memuat: ${error.message}</p>`;
-                listEl.innerHTML = '';
-                if(data.length > 0) {
-                     data.forEach(item => {
-                        const card = document.createElement('div');
-                        card.className = "bg-white rounded-lg shadow-md overflow-hidden relative";
-                        card.innerHTML = `<img src="${item.image_url}" class="h-40 w-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300?text=Error';"><div class="p-2"><p class="text-sm font-semibold truncate" title="${item.title || ''}">${item.title || 'Tanpa Judul'}</p></div>`;
-                        const deleteBtn = document.createElement('button');
-                        deleteBtn.innerHTML = '&times;';
-                        deleteBtn.className = "absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold";
-                        deleteBtn.onclick = () => deleteStorageItem('galeri', item.image_url, 'gallery_images', item.id, loadGallery);
-                        card.appendChild(deleteBtn);
-                        listEl.appendChild(card);
-                    });
-                } else listEl.innerHTML = '<p>Belum ada gambar.</p>';
-            }
-            async function loadInsurance() {
-                const listEl = document.getElementById('insurance-list');
-                listEl.innerHTML = '<p>Memuat rekanan...</p>';
-                const { data, error } = await supabaseClient.from('insurance_partners').select('*').order('name');
-                if (error) return listEl.innerHTML = `<p class="text-red-500">Gagal memuat: ${error.message}</p>`;
-                listEl.innerHTML = '';
-                if(data.length > 0){
-                    data.forEach(item => {
-                        const card = document.createElement('div');
-                        card.className = "bg-white p-2 rounded-lg shadow-md text-center relative";
-                        card.innerHTML = `<img src="${item.logo_url}" class="h-16 mx-auto object-contain" onerror="this.onerror=null;this.src='https://placehold.co/100x60?text=Error';"><p class="text-xs font-semibold mt-2 truncate">${item.name}</p>`;
-                        const deleteBtn = document.createElement('button');
-                        deleteBtn.innerHTML = '&times;';
-                        deleteBtn.className = "absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold";
-                        deleteBtn.onclick = () => deleteItem('insurance_partners', item.id, loadInsurance);
-                        card.appendChild(deleteBtn);
-                        listEl.appendChild(card);
-                    });
-                } else listEl.innerHTML = '<p>Belum ada rekanan.</p>';
-            }
-            async function loadContacts() {
-                const listEl = document.getElementById('contact-list');
-                listEl.innerHTML = '<tr><td colspan="4" class="text-center p-4">Memuat kontak...</td></tr>';
-                const { data, error } = await supabaseClient.from('contacts').select('*').order('created_at', { ascending: false });
-                if (error) return listEl.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-red-500">Gagal memuat: ${error.message}</td></tr>`;
-                listEl.innerHTML = '';
-                if(data.length > 0) data.forEach(item => listEl.innerHTML += `<tr><td class="px-6 py-4 text-sm text-gray-500">${new Date(item.created_at).toLocaleDateString('id-ID')}</td><td class="px-6 py-4 text-sm font-medium text-gray-900">${item.name}</td><td class="px-6 py-4 text-sm text-gray-500">${item.phone}</td><td class="px-6 py-4 text-sm text-gray-500">${item.message}</td></tr>`); else listEl.innerHTML = `<tr><td colspan="4" class="text-center p-4">Belum ada kontak masuk.</td></tr>`;
-            }
+            };
 
-            // -- Event Listeners Setup --
-            function setupForms() {
+            // -- Render & Load Functions --
+
+            // Profile
+            const loadProfileData = async () => {
+                const { data, error } = await supabaseClient.from('company_profile').select('*').eq('id', 1).single();
+                if (error && error.code !== 'PGRST116') showNotification('Gagal memuat profil usaha.', 'error');
+                else {
+                    const section = document.getElementById('profile-section');
+                    section.innerHTML = `
+                    <div class="card"><div class="card-header">Informasi Usaha</div><div class="card-body"><form id="profile-form">
+                        <div class="row g-3">
+                            <div class="col-md-6"><label for="company_name" class="form-label">Nama Bengkel</label><input type="text" id="company_name" class="form-control" value="${data.company_name || ''}"></div>
+                            <div class="col-md-6"><label for="tagline" class="form-label">Tagline</label><input type="text" id="tagline" class="form-control" value="${data.tagline || ''}"></div>
+                            <div class="col-12"><label for="about_us" class="form-label">Tentang Kami</label><textarea id="about_us" rows="4" class="form-control">${data.about_us || ''}</textarea></div>
+                            <div class="col-md-6"><label for="phone_number" class="form-label">No. Telepon</label><input type="text" id="phone_number" class="form-control" value="${data.phone_number || ''}"></div>
+                            <div class="col-md-6"><label for="whatsapp_number" class="form-label">No. WhatsApp (62)</label><input type="text" id="whatsapp_number" class="form-control" value="${data.whatsapp_number || ''}"></div>
+                            <div class="col-12"><label for="email" class="form-label">Email</label><input type="email" id="email" class="form-control" value="${data.email || ''}"></div>
+                            <div class="col-12"><label for="address" class="form-label">Alamat</label><textarea id="address" rows="2" class="form-control">${data.address || ''}</textarea></div>
+                            <div class="col-md-6"><label for="operating_hours_weekdays" class="form-label">Jam Kerja</label><input type="text" id="operating_hours_weekdays" class="form-control" value="${data.operating_hours_weekdays || ''}"></div>
+                            <div class="col-md-6"><label for="operating_hours_weekend" class="form-label">Jam Akhir Pekan</label><input type="text" id="operating_hours_weekend" class="form-control" value="${data.operating_hours_weekend || ''}"></div>
+                            <div class="col-12"><label for="map_embed_url" class="form-label">URL Google Maps</label><textarea id="map_embed_url" rows="3" class="form-control font-monospace">${data.map_embed_url || ''}</textarea></div>
+                        </div>
+                        <div class="mt-3 text-end"><button type="submit" id="save-profile-btn" class="btn btn-primary">Simpan Perubahan</button></div>
+                    </form></div></div>`;
+                    setupProfileForm();
+                }
+            };
+            const setupProfileForm = () => {
                 document.getElementById('profile-form').addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const btn = document.getElementById('save-profile-btn');
                     setLoading(btn, true);
-                    const updates = {
-                        id: 1, company_name: document.getElementById('company_name').value, tagline: document.getElementById('tagline').value,
+                    const updates = { id: 1, updated_at: new Date(),
+                        company_name: document.getElementById('company_name').value, tagline: document.getElementById('tagline').value,
                         about_us: document.getElementById('about_us').value, phone_number: document.getElementById('phone_number').value,
                         whatsapp_number: document.getElementById('whatsapp_number').value, email: document.getElementById('email').value,
                         address: document.getElementById('address').value, operating_hours_weekdays: document.getElementById('operating_hours_weekdays').value,
                         operating_hours_weekend: document.getElementById('operating_hours_weekend').value, map_embed_url: document.getElementById('map_embed_url').value,
-                        updated_at: new Date()
                     };
                     const { error } = await supabaseClient.from('company_profile').upsert(updates);
                     if(error) showNotification(`Gagal menyimpan: ${error.message}`, 'error');
                     else showNotification('Profil usaha berhasil diperbarui!', 'success');
                     setLoading(btn, false);
                 });
+            };
 
+            // Dashboard
+            const loadDashboardStats = async () => {
+                const section = document.getElementById('dashboard-section');
+                section.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+
+                const tables = ['services', 'testimonials', 'gallery_images', 'insurance_partners', 'contacts'];
+                let stats = {};
+                for (const table of tables) {
+                    const { count, error } = await supabaseClient.from(table).select('*', { count: 'exact', head: true });
+                    stats[table] = error ? 'N/A' : count;
+                }
+
+                const { data: recentContacts, error: contactsError } = await supabaseClient.from('contacts').select('name, created_at').order('created_at', { ascending: false }).limit(5);
+
+                let recentContactsHtml = '<p class="text-muted">Belum ada kontak masuk.</p>';
+                if (recentContacts && recentContacts.length > 0) {
+                    recentContactsHtml = '<ul class="list-group list-group-flush">';
+                    recentContacts.forEach(contact => {
+                        recentContactsHtml += `<li class="list-group-item d-flex justify-content-between align-items-center">${contact.name}<span class="text-muted small">${new Date(contact.created_at).toLocaleDateString("id-ID")}</span></li>`;
+                    });
+                    recentContactsHtml += '</ul>';
+                }
+
+                section.innerHTML = `
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6 mb-4"><div class="card text-bg-primary shadow h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center"><div><div class="text-uppercase mb-1">Layanan</div><div class="h5 mb-0 fw-bold">${stats.services}</div></div><i class="bi bi-tools fs-2"></i></div></div></div></div>
+                        <div class="col-xl-3 col-md-6 mb-4"><div class="card text-bg-success shadow h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center"><div><div class="text-uppercase mb-1">Testimoni</div><div class="h5 mb-0 fw-bold">${stats.testimonials}</div></div><i class="bi bi-chat-quote fs-2"></i></div></div></div></div>
+                        <div class="col-xl-3 col-md-6 mb-4"><div class="card text-bg-info shadow h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center"><div><div class="text-uppercase mb-1">Galeri</div><div class="h5 mb-0 fw-bold">${stats.gallery_images}</div></div><i class="bi bi-images fs-2"></i></div></div></div></div>
+                        <div class="col-xl-3 col-md-6 mb-4"><div class="card text-bg-warning shadow h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center"><div><div class="text-uppercase mb-1">Kontak Masuk</div><div class="h5 mb-0 fw-bold">${stats.contacts}</div></div><i class="bi bi-telephone-inbound fs-2"></i></div></div></div></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 mb-4">
+                            <div class="card shadow mb-4">
+                                <div class="card-header d-flex align-items-center"><i class="bi bi-activity me-2"></i>Aktivitas Terbaru</div>
+                                <div class="card-body">${recentContactsHtml}</div>
+                            </div>
+                            <div class="card shadow">
+                                <div class="card-header d-flex align-items-center"><i class="bi bi-broadcast me-2"></i>Live Visitor Analytics</div>
+                                <div class="card-body text-center">
+                                    <p class="text-muted">Karena website Anda di-hosting di Vercel, Anda mendapatkan akses ke analytics real-time yang canggih.</p>
+                                    <a href="https://vercel.com/dashboard" target="_blank" class="btn btn-primary">Buka Vercel Dashboard</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            };
+
+            // Services
+            const loadServices = async () => {
+                const section = document.getElementById('services-section');
+                section.innerHTML = `<div class="card mb-4"><div class="card-header">Tambah Layanan Baru</div><div class="card-body"><form id="service-form"><div class="row g-3"><div class="col-md-6"><label for="service-name" class="form-label">Nama Layanan</label><input type="text" id="service-name" required class="form-control"></div><div class="col-md-6"><label for="service-icon" class="form-label">Nama Ikon (<a href="https://icons.getbootstrap.com/" target="_blank">Bootstrap Icons</a>)</label><input type="text" id="service-icon" placeholder="Contoh: tools" required class="form-control"></div><div class="col-12"><label for="service-desc" class="form-label">Deskripsi Singkat</label><textarea id="service-desc" rows="2" class="form-control"></textarea></div><div class="col-12"><button type="submit" id="add-service-btn" class="btn btn-primary">Tambah Layanan</button></div></div></form></div></div><div class="card"><div class="card-header">Daftar Layanan</div><div class="card-body"><table id="services-table" class="table table-striped" style="width:100%"><thead><tr><th>Ikon</th><th>Nama</th><th>Deskripsi</th><th>Aksi</th></tr></thead><tbody></tbody></table></div></div>`;
+                setupServiceForm();
+                const { data, error } = await supabaseClient.from('services').select('*').order('created_at');
+                if (error) { showNotification(`Gagal memuat layanan: ${error.message}`, 'error'); return; }
+                const tableBody = section.querySelector('tbody');
+                tableBody.innerHTML = data.map(item => `<tr><td><i class="bi bi-${item.icon_name || 'gear'}"></i></td><td>${item.name}</td><td>${item.description || ''}</td><td><button class="btn btn-sm btn-danger" onclick="deleteItem('services', ${item.id}, 'loadServices')"><i class="bi bi-trash"></i></button></td></tr>`).join('');
+                initDataTable('services-table');
+            };
+            const setupServiceForm = () => {
                 const serviceForm = document.getElementById('service-form');
+                if (!serviceForm) return;
                 serviceForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const btn = document.getElementById('add-service-btn');
                     setLoading(btn, true);
-                    const { error } = await supabaseClient.from('services').insert({
-                        name: serviceForm['service-name'].value,
-                        description: serviceForm['service-desc'].value,
-                        icon_name: serviceForm['service-icon'].value
-                    });
+                    const { error } = await supabaseClient.from('services').insert({ name: serviceForm['service-name'].value, description: serviceForm['service-desc'].value, icon_name: serviceForm['service-icon'].value });
                     if (error) showNotification(`Gagal: ${error.message}`, 'error');
                     else { showNotification('Layanan berhasil ditambahkan.'); serviceForm.reset(); loadServices(); }
                     setLoading(btn, false);
                 });
+            };
 
+            // Testimonials
+            const loadTestimonials = async () => {
+                const section = document.getElementById('testimonials-section');
+                section.innerHTML = `<div class="card"><div class="card-header">Daftar Testimoni</div><div class="card-body"><table id="testimonials-table" class="table table-striped" style="width:100%"><thead><tr><th>Nama</th><th>Rating</th><th>Pesan</th></tr></thead><tbody></tbody></table></div></div>`;
+                const { data, error } = await supabaseClient.from('testimonials').select('*').order('created_at', { ascending: false });
+                if (error) { showNotification(`Gagal memuat testimoni: ${error.message}`, 'error'); return; }
+                const tableBody = section.querySelector('tbody');
+                tableBody.innerHTML = data.map(item => `<tr><td>${item.name}</td><td>${'★'.repeat(item.rating)}${'☆'.repeat(5 - item.rating)}</td><td>${item.message}</td></tr>`).join('');
+                initDataTable('testimonials-table');
+            };
+
+            // Gallery
+            const loadGallery = async () => {
+                const section = document.getElementById('gallery-section');
+                section.innerHTML = `<div class="card mb-4"><div class="card-header">Tambah Gambar Baru</div><div class="card-body"><form id="gallery-form"><div class="mb-3"><label for="gallery-title" class="form-label">Judul Gambar</label><input type="text" id="gallery-title" class="form-control"></div><div class="mb-3"><label for="gallery-file" class="form-label">File Gambar</label><input type="file" id="gallery-file" accept="image/*" required class="form-control"></div><button type="submit" id="upload-gallery-btn" class="btn btn-primary">Unggah Gambar</button></form></div></div><div class="card"><div class="card-header">Daftar Gambar</div><div class="card-body"><table id="gallery-table" class="table table-striped" style="width:100%"><thead><tr><th>Gambar</th><th>Judul</th><th>Aksi</th></tr></thead><tbody></tbody></table></div></div>`;
+                setupGalleryForm();
+                const { data, error } = await supabaseClient.from('gallery_images').select('*').order('created_at', { ascending: false });
+                if (error) { showNotification(`Gagal memuat galeri: ${error.message}`, 'error'); return; }
+                const tableBody = section.querySelector('tbody');
+                tableBody.innerHTML = data.map(item => `
+                    <tr>
+                        <td><img src="${item.image_url}" height="50" class="rounded" onerror="this.style.display='none'"></td>
+                        <td>${item.title || 'Tanpa Judul'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#gallery-edit-modal" data-id="${item.id}" data-title="${item.title || ''}"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteStorageItem('galeri', '${item.image_url}', 'gallery_images', ${item.id}, 'loadGallery')"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>`).join('');
+                initDataTable('gallery-table');
+            };
+            const setupGalleryForm = () => {
                 const galleryForm = document.getElementById('gallery-form');
+                if (!galleryForm) return;
                 galleryForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const btn = document.getElementById('upload-gallery-btn');
@@ -448,8 +445,30 @@
                     else { showNotification('Gambar berhasil diunggah.'); galleryForm.reset(); loadGallery(); }
                     setLoading(btn, false);
                 });
-                
+            };
+
+            // Insurance
+            const loadInsurance = async () => {
+                const section = document.getElementById('insurance-section');
+                section.innerHTML = `<div class="card mb-4"><div class="card-header">Tambah Asuransi</div><div class="card-body"><form id="insurance-form"><div class="mb-3"><label for="insurance-name" class="form-label">Nama Perusahaan</label><input type="text" id="insurance-name" required class="form-control"></div><div class="mb-3"><label for="insurance-logo-url" class="form-label">URL Logo</label><input type="url" id="insurance-logo-url" placeholder="https://example.com/logo.png" required class="form-control"></div><button type="submit" id="add-insurance-btn" class="btn btn-primary">Tambah Asuransi</button></form></div></div><div class="card"><div class="card-header">Rekanan Asuransi</div><div class="card-body"><table id="insurance-table" class="table table-striped" style="width:100%"><thead><tr><th>Logo</th><th>Nama</th><th>Aksi</th></tr></thead><tbody></tbody></table></div></div>`;
+                setupInsuranceForm();
+                const { data, error } = await supabaseClient.from('insurance_partners').select('*').order('name');
+                if (error) { showNotification(`Gagal memuat rekanan: ${error.message}`, 'error'); return; }
+                const tableBody = section.querySelector('tbody');
+                tableBody.innerHTML = data.map(item => `
+                    <tr>
+                        <td><img src="${item.logo_url}" height="30" onerror="this.style.display='none'"></td>
+                        <td>${item.name}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#insurance-edit-modal" data-id="${item.id}" data-name="${item.name}" data-logo_url="${item.logo_url}"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteItem('insurance_partners', ${item.id}, 'loadInsurance')"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>`).join('');
+                initDataTable('insurance-table');
+            };
+            const setupInsuranceForm = () => {
                 const insuranceForm = document.getElementById('insurance-form');
+                if (!insuranceForm) return;
                 insuranceForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const btn = document.getElementById('add-insurance-btn');
@@ -459,42 +478,147 @@
                     else { showNotification('Asuransi berhasil ditambahkan.'); insuranceForm.reset(); loadInsurance(); }
                     setLoading(btn, false);
                 });
-            }
-            
-            function setupNavigation() {
-                const links = document.querySelectorAll('.sidebar-link');
+            };
+
+            // Contacts
+            const loadContacts = async () => {
+                const section = document.getElementById('contacts-section');
+                section.innerHTML = `<div class="card"><div class="card-header">Kontak Masuk</div><div class="card-body"><table id="contacts-table" class="table table-striped" style="width:100%"><thead><tr><th>Tanggal</th><th>Nama</th><th>Telepon</th><th>Pesan</th><th>Status</th><th>Aksi</th></tr></thead><tbody></tbody></table></div></div>`;
+                const { data, error } = await supabaseClient.from('contacts').select('*').order('created_at', { ascending: false });
+                if (error) { showNotification(`Gagal memuat kontak: ${error.message}`, 'error'); return; }
+                const statusColors = { 'New': 'primary', 'Sudah dihubungi': 'success', 'On process': 'warning' };
+                const statusOptions = ['New', 'Sudah dihubungi', 'On process'];
+                const tableBody = section.querySelector('tbody');
+                tableBody.innerHTML = data.map(item => {
+                    const status = item.status || 'New';
+                    let selectOptions = statusOptions.map(opt => `<option value="${opt}" ${status === opt ? 'selected' : ''}>${opt}</option>`).join('');
+                    return `<tr>
+                        <td>${new Date(item.created_at).toLocaleDateString('id-ID')}</td>
+                        <td>${item.name}</td>
+                        <td>${item.phone}</td>
+                        <td>${item.message}</td>
+                        <td><span class="badge bg-${statusColors[status]}">${status}</span></td>
+                        <td><select class="form-select form-select-sm" onchange="updateContactStatus(${item.id}, this.value)">${selectOptions}</select></td>
+                    </tr>`
+                }).join('');
+                initDataTable('contacts-table');
+            };
+
+            // -- Modal & Edit Form Setup --
+            const setupEditModals = () => {
+                const galleryModal = document.getElementById('gallery-edit-modal');
+                galleryModal.addEventListener('show.bs.modal', (event) => {
+                    const button = event.relatedTarget;
+                    const id = button.getAttribute('data-id');
+                    const title = button.getAttribute('data-title');
+                    galleryModal.querySelector('#edit-gallery-id').value = id;
+                    galleryModal.querySelector('#edit-gallery-title').value = title;
+                });
+
+                document.getElementById('gallery-edit-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const id = document.getElementById('edit-gallery-id').value;
+                    const title = document.getElementById('edit-gallery-title').value;
+                    const btn = document.getElementById('save-gallery-changes-btn');
+                    setLoading(btn, true);
+                    const { error } = await supabaseClient.from('gallery_images').update({ title: title }).eq('id', id);
+                    if (error) showNotification(`Gagal update: ${error.message}`, 'error');
+                    else {
+                        showNotification('Judul gambar berhasil diperbarui.');
+                        bootstrap.Modal.getInstance(galleryModal).hide();
+                        loadGallery();
+                    }
+                    setLoading(btn, false);
+                });
+
+                const insuranceModal = document.getElementById('insurance-edit-modal');
+                insuranceModal.addEventListener('show.bs.modal', (event) => {
+                    const button = event.relatedTarget;
+                    const id = button.getAttribute('data-id');
+                    const name = button.getAttribute('data-name');
+                    const logoUrl = button.getAttribute('data-logo_url');
+                    insuranceModal.querySelector('#edit-insurance-id').value = id;
+                    insuranceModal.querySelector('#edit-insurance-name').value = name;
+                    insuranceModal.querySelector('#edit-insurance-logo-url').value = logoUrl;
+                });
+
+                document.getElementById('insurance-edit-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const id = document.getElementById('edit-insurance-id').value;
+                    const name = document.getElementById('edit-insurance-name').value;
+                    const logo_url = document.getElementById('edit-insurance-logo-url').value;
+                    const btn = document.getElementById('save-insurance-changes-btn');
+                    setLoading(btn, true);
+                    const { error } = await supabaseClient.from('insurance_partners').update({ name, logo_url }).eq('id', id);
+                    if (error) showNotification(`Gagal update: ${error.message}`, 'error');
+                    else {
+                        showNotification('Rekanan asuransi berhasil diperbarui.');
+                        bootstrap.Modal.getInstance(insuranceModal).hide();
+                        loadInsurance();
+                    }
+                    setLoading(btn, false);
+                });
+            };
+
+            // -- Navigation & Initial Load --
+            const setupNavigation = () => {
+                const links = document.querySelectorAll('.nav-link');
                 const sections = document.querySelectorAll('.content-section');
                 const title = document.getElementById('section-title');
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+
+                const hideSidebar = () => {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                };
+
                 links.forEach(link => {
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
                         const sectionId = link.getAttribute('data-section');
                         links.forEach(l => l.classList.remove('active'));
                         link.classList.add('active');
-                         sections.forEach(s => s.classList.add('hidden'));
-                        document.getElementById(`${sectionId}-section`).classList.remove('hidden');
+                        sections.forEach(s => s.classList.add('d-none'));
+                        document.getElementById(`${sectionId}-section`).classList.remove('d-none');
                         title.textContent = link.textContent.trim();
-                        if (sectionId === 'dashboard') loadDashboardStats();
-                        else if (sectionId === 'profile') loadProfileData();
+                        
+                        if (sectionId === 'profile') loadProfileData();
+                        else if (sectionId === 'dashboard') loadDashboardStats();
+                        else if (sectionId === 'services') loadServices();
+                        else if (sectionId === 'testimonials') loadTestimonials();
+                        else if (sectionId === 'gallery') loadGallery();
+                        else if (sectionId === 'insurance') loadInsurance();
+                        else if (sectionId === 'contacts') loadContacts();
+
+                        if (window.innerWidth < 768) {
+                           hideSidebar();
+                        }
                     });
                 });
-            }
+
+                document.getElementById('sidebar-toggle').addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                    overlay.classList.toggle('active');
+                });
+                overlay.addEventListener('click', hideSidebar);
+            };
 
             document.getElementById('logout-button').addEventListener('click', async () => {
                 await supabaseClient.auth.signOut();
                 window.location.replace('admin-login.html');
             });
 
-            // -- Initial Calls --
-            loadProfileData();
-            loadDashboardStats();
-            loadServices(); 
-            loadTestimonials(); 
-            loadGallery(); 
-            loadInsurance(); 
-            loadContacts();
-            setupForms();
+            // Make load functions global for callbacks
+            window.loadServices = loadServices;
+            window.loadTestimonials = loadTestimonials;
+            window.loadGallery = loadGallery;
+            window.loadInsurance = loadInsurance;
+            window.loadContacts = loadContacts;
+
             setupNavigation();
+            setupEditModals();
+            loadDashboardStats(); // Load initial section
         });
     </script>
 </body>

@@ -226,9 +226,14 @@
                     <h2 class="text-3xl sm:text-4xl font-poppins font-bold accent-dark">Testimoni Pelanggan</h2>
                     <p class="text-gray-600 mt-2">Apa kata mereka tentang layanan kami.</p>
                 </div>
-                <div id="testimonial-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                    <!-- Testimonials will be loaded here -->
+                <div class="relative">
+                    <div id="testimonial-container" class="flex overflow-x-auto scroll-smooth snap-x snap-mandatory gap-8 mb-12 pb-4">
+                        <!-- Testimonials will be loaded here -->
+                    </div>
+                    <button id="testimonial-prev" class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-md hover:bg-gray-100 transition z-10 hidden md:block">&lt;</button>
+                    <button id="testimonial-next" class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-md hover:bg-gray-100 transition z-10 hidden md:block">&gt;</button>
                 </div>
+
                 <div class="text-center">
                     <button id="show-testimonial-form-btn"
                         class="bg-primary-blue text-white px-8 py-3 rounded-lg font-bold hover:bg-opacity-90 transition-all duration-300">
@@ -492,7 +497,7 @@
                     if (error) throw error;
                     el.innerHTML = '';
                     if (data.length > 0) {
-                        data.forEach(f => el.innerHTML += `<div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden group shadow-lg"><img src="${f.image_url}" alt="${f.title||''}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.onerror=null;this.src='https://placehold.co/400x300?text=Error';"></div>`);
+                        data.forEach(f => el.innerHTML += `<figure class="w-full h-auto bg-white rounded-lg overflow-hidden group shadow-lg"><img src="${f.image_url}" alt="${f.title||''}" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.onerror=null;this.src='https://placehold.co/400x300?text=Error';"><figcaption class="p-4 text-center text-gray-700 font-semibold">${f.title || 'Proses Pengerjaan'}</figcaption></figure>`);
                     } else {
                         el.innerHTML = '<p class="col-span-full text-center">Galeri masih kosong.</p>';
                     }
@@ -502,23 +507,64 @@
             }
         
             async function loadTestimonials(supabaseClient) {
-                const el = document.getElementById('testimonial-list');
-                el.innerHTML = '<p class="col-span-full text-center">Memuat testimoni...</p>';
+                const el = document.getElementById('testimonial-container');
+                el.innerHTML = '<p class="text-center w-full">Memuat testimoni...</p>';
                 try {
-                    const { data, error } = await supabaseClient.from('testimonials').select('*').order('created_at', { ascending: false }).limit(6);
+                    const { data, error } = await supabaseClient.from('testimonials').select('*').order('created_at', { ascending: false }).limit(9);
                     if (error) throw error;
                     el.innerHTML = '';
                     if (data.length > 0) {
                         data.forEach(t => {
-                            const stars = '★'.repeat(t.rating) + '☆'.repeat(5-t.rating);
-                            el.innerHTML += `<div class="bg-white p-6 rounded-lg testimonial-card"><div class="flex items-center mb-4"><div class="w-12 h-12 rounded-full bg-primary-blue text-white flex items-center justify-center font-bold text-xl mr-4 shrink-0">${t.name.charAt(0).toUpperCase()}</div><div><h4 class="font-bold accent-dark">${t.name}</h4><div class="text-yellow-400 text-lg">${stars}</div></div></div><p class="text-gray-600 italic">"${t.message}"</p></div>`;
+                            const stars = '★'.repeat(t.rating) + '☆'.repeat(5 - t.rating);
+                            el.innerHTML += `
+                                <div class="snap-start flex-shrink-0 w-full sm:w-1/2 lg:w-1/3">
+                                    <div class="bg-white p-6 rounded-lg testimonial-card h-full">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 rounded-full bg-primary-blue text-white flex items-center justify-center font-bold text-xl mr-4 shrink-0">${t.name.charAt(0).toUpperCase()}</div>
+                                            <div>
+                                                <h4 class="font-bold accent-dark">${t.name}</h4>
+                                                <div class="text-yellow-400 text-lg">${stars}</div>
+                                            </div>
+                                        </div>
+                                        <p class="text-gray-600 italic">"${t.message}"</p>
+                                    </div>
+                                </div>`;
                         });
+                        setupTestimonialCarousel();
                     } else {
-                         el.innerHTML = '<p class="col-span-full text-center">Jadilah yang pertama memberikan testimoni!</p>';
+                        el.innerHTML = '<p class="text-center w-full">Jadilah yang pertama memberikan testimoni!</p>';
+                        document.getElementById('testimonial-prev').style.display = 'none';
+                        document.getElementById('testimonial-next').style.display = 'none';
                     }
                 } catch (error) {
-                     el.innerHTML = '<p class="col-span-full text-center text-red-500">Gagal memuat testimoni.</p>';
+                    el.innerHTML = '<p class="text-center w-full text-red-500">Gagal memuat testimoni.</p>';
                 }
+            }
+
+            function setupTestimonialCarousel() {
+                const container = document.getElementById('testimonial-container');
+                const prevBtn = document.getElementById('testimonial-prev');
+                const nextBtn = document.getElementById('testimonial-next');
+                if (!container || !prevBtn || !nextBtn) return;
+
+                const scrollAmount = container.offsetWidth;
+
+                nextBtn.addEventListener('click', () => {
+                    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                });
+
+                prevBtn.addEventListener('click', () => {
+                    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                });
+
+                // Show/hide buttons based on scroll position
+                const handleScrollButtons = () => {
+                    prevBtn.style.display = container.scrollLeft > 0 ? 'block' : 'none';
+                    nextBtn.style.display = container.scrollLeft < (container.scrollWidth - container.offsetWidth) ? 'block' : 'none';
+                };
+
+                container.addEventListener('scroll', handleScrollButtons);
+                handleScrollButtons(); // Initial check
             }
             
             function setupTestimonialForm(supabaseClient) {
