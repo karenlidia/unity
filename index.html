@@ -213,8 +213,18 @@
                     <h2 class="text-3xl sm:text-4xl font-poppins font-bold accent-dark">Galeri Pengerjaan</h2>
                     <p class="text-gray-600 mt-2">Lihat hasil kerja dan fasilitas modern kami.</p>
                 </div>
-                <div id="gallery-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Gallery images will be loaded here -->
+                <div class="relative">
+                    <div id="gallery-container" class="flex overflow-x-auto scroll-smooth snap-x snap-mandatory gap-8 mb-12 pb-4">
+                        <!-- Gallery images will be loaded here -->
+                    </div>
+                    <button id="gallery-prev" class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-md hover:bg-gray-100 transition z-10 hidden md:block">&lt;</button>
+                    <button id="gallery-next" class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-md hover:bg-gray-100 transition z-10 hidden md:block">&gt;</button>
+                </div>
+                <div class="text-center mt-8">
+                    <button id="load-more-gallery"
+                        class="bg-primary-blue text-white px-8 py-3 rounded-lg font-bold hover:bg-opacity-90 transition-all duration-300">
+                        Lihat Lebih Banyak
+                    </button>
                 </div>
             </div>
         </section>
@@ -362,7 +372,6 @@
             <div
                 class="mt-8 border-t border-gray-800 pt-8 flex flex-col sm:flex-row justify-between items-center text-sm">
                 <p>&copy; <span id="current-year"></span> <span id="footer-company-name">Unity Automobile</span>. All Rights Reserved.</p>
-           
                 </p>
             </div>
         </div>
@@ -403,6 +412,7 @@
                 loadInsurancePartners(supabaseClient);
                 loadGallery(supabaseClient);
                 loadTestimonials(supabaseClient);
+                setupGalleryCarousel();
                 setupTestimonialForm(supabaseClient);
                 setupWhatsAppForm(supabaseClient);
                 setupShareLocation();
@@ -491,18 +501,27 @@
 
             async function loadGallery(supabaseClient) {
                 const el = document.getElementById('gallery-container');
-                el.innerHTML = '<p class="col-span-full text-center">Memuat galeri...</p>';
+                el.innerHTML = '<p class="text-center w-full">Memuat galeri...</p>';
                 try {
-                    const { data, error } = await supabaseClient.from('gallery_images').select('*').order('created_at', { ascending: false }).limit(6);
+                    const { data, error } = await supabaseClient.from('gallery_images').select('*').order('created_at', { ascending: false });
                     if (error) throw error;
                     el.innerHTML = '';
                     if (data.length > 0) {
-                        data.forEach(f => el.innerHTML += `<figure class="w-full h-auto bg-white rounded-lg overflow-hidden group shadow-lg"><img src="${f.image_url}" alt="${f.title||''}" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.onerror=null;this.src='https://placehold.co/400x300?text=Error';"><figcaption class="p-4 text-center text-gray-700 font-semibold">${f.title || 'Proses Pengerjaan'}</figcaption></figure>`);
+                        const itemsPerPage = 6;
+                        for (let i = 0; i < data.length; i += itemsPerPage) {
+                            const pageItems = data.slice(i, i + itemsPerPage);
+                            let pageContent = '';
+                            pageItems.forEach(f => {
+                                pageContent += `<figure class="bg-white rounded-lg overflow-hidden group shadow-lg"><img src="${f.image_url}" alt="${f.title|| ''}" class="w-full aspect-[4/3] object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.onerror=null;this.src='https://placehold.co/400x300?text=Error';"><figcaption class="p-4 text-center text-gray-700 font-semibold">${f.title || 'Proses Pengerjaan'}</figcaption></figure>`;
+                            });
+                            el.innerHTML += `<div class="snap-start flex-shrink-0 w-full grid grid-cols-1 sm:grid-cols-3 gap-4">${pageContent}</div>`;
+                        }
+                        setupGalleryCarousel();
                     } else {
-                        el.innerHTML = '<p class="col-span-full text-center">Galeri masih kosong.</p>';
+                        el.innerHTML = '<p class="text-center w-full">Galeri masih kosong.</p>';
                     }
                 } catch (error) {
-                    el.innerHTML = '<p class="col-span-full text-center text-red-500">Gagal memuat galeri.</p>';
+                    el.innerHTML = '<p class="text-center w-full text-red-500">Gagal memuat galeri.</p>';
                 }
             }
         
@@ -510,7 +529,7 @@
                 const el = document.getElementById('testimonial-container');
                 el.innerHTML = '<p class="text-center w-full">Memuat testimoni...</p>';
                 try {
-                    const { data, error } = await supabaseClient.from('testimonials').select('*').order('created_at', { ascending: false }).limit(9);
+                    const { data, error } = await supabaseClient.from('testimonials').select('*').order('created_at', { ascending: false });
                     if (error) throw error;
                     el.innerHTML = '';
                     if (data.length > 0) {
@@ -539,6 +558,32 @@
                 } catch (error) {
                     el.innerHTML = '<p class="text-center w-full text-red-500">Gagal memuat testimoni.</p>';
                 }
+            }
+
+            function setupGalleryCarousel() {
+                const container = document.getElementById('gallery-container');
+                const prevBtn = document.getElementById('gallery-prev');
+                const nextBtn = document.getElementById('gallery-next');
+                if (!container || !prevBtn || !nextBtn) return;
+
+                const scrollAmount = container.offsetWidth;
+
+                nextBtn.addEventListener('click', () => {
+                    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                });
+
+                prevBtn.addEventListener('click', () => {
+                    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                });
+
+                // Show/hide buttons based on scroll position
+                const handleScrollButtons = () => {
+                    prevBtn.style.display = container.scrollLeft > 0 ? 'block' : 'none';
+                    nextBtn.style.display = container.scrollLeft < (container.scrollWidth - container.offsetWidth) ? 'block' : 'none';
+                };
+
+                container.addEventListener('scroll', handleScrollButtons);
+                handleScrollButtons(); // Initial check
             }
 
             function setupTestimonialCarousel() {
@@ -615,7 +660,7 @@
                     e.preventDefault();
                     setLoading(sendBtn, true);
                     const name = waForm['wa-nama'].value, phone = waForm['wa-no'].value, message = waForm['wa-pesan'].value;
-                    try { await supabaseClient.from('contacts').insert([{ name, phone, message }]); }
+                    try { await supabaseClient.from('contacts').insert([{ name, phone, message }]); } 
                     catch(error) { console.error('Error saving contact:', error.message); }
                     const waMessage = `Halo Unity Automobile,\n\nNama: *${name}*\nNo. WA: *${phone}*\n\nPesan:\n${message}`;
                     const encodedMessage = encodeURIComponent(waMessage);
@@ -631,7 +676,7 @@
                 shareBtn.addEventListener('click', () => {
                     const locationUrl = 'https://maps.app.goo.gl/wQhCfhT1E3gXJqYV6'; 
                     const shareData = { title: 'Lokasi Unity Automobile', text: 'Kunjungi Unity Automobile di Medan.', url: locationUrl };
-                    if (navigator.share) navigator.share(shareData).catch(console.error);
+                    if (navigator.share) navigator.share(shareData).catch(console.error); 
                     else navigator.clipboard.writeText(locationUrl).then(() => alert('Lokasi disalin!'));
                 });
             }
