@@ -7,16 +7,16 @@
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     
     <!-- DataTables CSS -->
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 
-    <!-- Google Fonts, Supabase JS -->
+    <!-- Google Fonts, Supabase JS, Feather Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
     <link rel="icon" type="image/png" href="/unity.png">
 
     <style>
@@ -35,9 +35,10 @@
             display: flex;
             align-items: center;
         }
-        .nav-link .bi {
+        .nav-link svg.feather {
             margin-right: 0.75rem;
-            font-size: 1.2rem;
+            width: 20px;
+            height: 20px;
             color: #888;
         }
         .nav-link.active, .nav-link:hover {
@@ -45,7 +46,7 @@
             color: #fff;
             border-radius: 0.5rem;
         }
-        .nav-link.active .bi, .nav-link:hover .bi {
+        .nav-link.active svg.feather, .nav-link:hover svg.feather {
             color: #fff;
         }
         .btn-loading { 
@@ -110,13 +111,13 @@
             </a>
             <hr>
             <ul class="nav nav-pills flex-column mb-auto">
-                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
-                <li class="nav-item mb-1"><a href="#" class="nav-link active" data-section="profile"><i class="bi bi-person-badge"></i>Profil Usaha</a></li>
-                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="services"><i class="bi bi-tools"></i>Layanan</a></li>
-                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="testimonials"><i class="bi bi-chat-quote"></i>Testimoni</a></li>
-                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="gallery"><i class="bi bi-images"></i>Galeri</a></li>
-                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="insurance"><i class="bi bi-shield-check"></i>Asuransi</a></li>
-                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="contacts"><i class="bi bi-telephone-inbound"></i>Kontak Masuk</a></li>
+                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="dashboard"><i data-feather="activity"></i>Dashboard</a></li>
+                <li class="nav-item mb-1"><a href="#" class="nav-link active" data-section="profile"><i data-feather="user"></i>Profil Usaha</a></li>
+                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="services"><i data-feather="tool"></i>Layanan</a></li>
+                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="testimonials"><i data-feather="message-square"></i>Testimoni</a></li>
+                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="gallery"><i data-feather="image"></i>Galeri</a></li>
+                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="insurance"><i data-feather="shield"></i>Asuransi</a></li>
+                <li class="nav-item mb-1"><a href="#" class="nav-link" data-section="contacts"><i data-feather="phone-incoming"></i>Kontak Masuk</a></li>
             </ul>
             <hr>
             <div>
@@ -151,6 +152,41 @@
     </div>
 
     <!-- Modals -->
+    <div class="modal fade" id="service-edit-modal" tabindex="-1" aria-labelledby="serviceEditModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="serviceEditModalLabel">Edit Layanan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="service-edit-form">
+                        <input type="hidden" id="edit-service-id">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="edit-service-name" class="form-label">Nama Layanan</label>
+                                <input type="text" id="edit-service-name" required class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit-service-icon" class="form-label">Nama Ikon (<a href="https://feathericons.com/" target="_blank">Feather Icons</a>)</label>
+                                <input type="text" id="edit-service-icon" required class="form-control">
+                            </div>
+                            <div class="col-12">
+                                <label for="edit-service-desc" class="form-label">Deskripsi Singkat</label>
+                                <textarea id="edit-service-desc" rows="2" class="form-control"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label for="edit-service-detailed-desc" class="form-label">Deskripsi Lengkap</label>
+                                <textarea id="edit-service-detailed-desc" rows="5" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" id="save-service-changes-btn" class="btn btn-primary mt-3">Simpan Perubahan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="gallery-edit-modal" tabindex="-1" aria-labelledby="galleryEditModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -222,6 +258,7 @@
                 return;
             }
             document.getElementById('admin-email').textContent = session.user.email;
+            feather.replace();
 
             // -- Global Utils --
             const showNotification = (message, type = 'success') => {
@@ -245,6 +282,7 @@
                     responsive: true,
                     order: [[0, 'desc']]
                 });
+                feather.replace();
             }
             window.deleteItem = async (tableName, id, callbackName) => {
                 if (!confirm(`Anda yakin ingin menghapus item ini dari tabel ${tableName}?`)) return;
@@ -349,19 +387,19 @@
 
                 section.innerHTML = `
                     <div class="row">
-                        <div class="col-xl-3 col-md-6 mb-4"><div class="card text-bg-primary shadow h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center"><div><div class="text-uppercase mb-1">Layanan</div><div class="h5 mb-0 fw-bold">${stats.services}</div></div><i class="bi bi-tools fs-2"></i></div></div></div></div>
-                        <div class="col-xl-3 col-md-6 mb-4"><div class="card text-bg-success shadow h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center"><div><div class="text-uppercase mb-1">Testimoni</div><div class="h5 mb-0 fw-bold">${stats.testimonials}</div></div><i class="bi bi-chat-quote fs-2"></i></div></div></div></div>
-                        <div class="col-xl-3 col-md-6 mb-4"><div class="card text-bg-info shadow h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center"><div><div class="text-uppercase mb-1">Galeri</div><div class="h5 mb-0 fw-bold">${stats.gallery_images}</div></div><i class="bi bi-images fs-2"></i></div></div></div></div>
-                        <div class="col-xl-3 col-md-6 mb-4"><div class="card text-bg-warning shadow h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center"><div><div class="text-uppercase mb-1">Kontak Masuk</div><div class="h5 mb-0 fw-bold">${stats.contacts}</div></div><i class="bi bi-telephone-inbound fs-2"></i></div></div></div></div>
+                        <div class="col-xl-3 col-md-6 mb-4"><div class="card text-bg-primary shadow h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center"><div><div class="text-uppercase mb-1">Layanan</div><div class="h5 mb-0 fw-bold">${stats.services}</div></div><i data-feather="tool" class="fs-2"></i></div></div></div></div>
+                        <div class="col-xl-3 col-md-6 mb-4"><div class="card text-bg-success shadow h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center"><div><div class="text-uppercase mb-1">Testimoni</div><div class="h5 mb-0 fw-bold">${stats.testimonials}</div></div><i data-feather="message-square" class="fs-2"></i></div></div></div></div>
+                        <div class="col-xl-3 col-md-6 mb-4"><div class="card text-bg-info shadow h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center"><div><div class="text-uppercase mb-1">Galeri</div><div class="h5 mb-0 fw-bold">${stats.gallery_images}</div></div><i data-feather="image" class="fs-2"></i></div></div></div></div>
+                        <div class="col-xl-3 col-md-6 mb-4"><div class="card text-bg-warning shadow h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center"><div><div class="text-uppercase mb-1">Kontak Masuk</div><div class="h5 mb-0 fw-bold">${stats.contacts}</div></div><i data-feather="phone-incoming" class="fs-2"></i></div></div></div></div>
                     </div>
                     <div class="row">
                         <div class="col-lg-12 mb-4">
                             <div class="card shadow mb-4">
-                                <div class="card-header d-flex align-items-center"><i class="bi bi-activity me-2"></i>Aktivitas Terbaru</div>
+                                <div class="card-header d-flex align-items-center"><i data-feather="activity" class="me-2"></i>Aktivitas Terbaru</div>
                                 <div class="card-body">${recentContactsHtml}</div>
                             </div>
                             <div class="card shadow">
-                                <div class="card-header d-flex align-items-center"><i class="bi bi-broadcast me-2"></i>Live Visitor Analytics</div>
+                                <div class="card-header d-flex align-items-center"><i data-feather="bar-chart-2" class="me-2"></i>Live Visitor Analytics</div>
                                 <div class="card-body text-center">
                                     <p class="text-muted">Karena website Anda di-hosting di Vercel, Anda mendapatkan akses ke analytics real-time yang canggih.</p>
                                     <a href="https://vercel.com/dashboard" target="_blank" class="btn btn-primary">Buka Vercel Dashboard</a>
@@ -370,17 +408,27 @@
                         </div>
                     </div>
                 `;
+                feather.replace();
             };
 
             // Services
             const loadServices = async () => {
                 const section = document.getElementById('services-section');
-                section.innerHTML = `<div class="card mb-4"><div class="card-header">Tambah Layanan Baru</div><div class="card-body"><form id="service-form"><div class="row g-3"><div class="col-md-6"><label for="service-name" class="form-label">Nama Layanan</label><input type="text" id="service-name" required class="form-control"></div><div class="col-md-6"><label for="service-icon" class="form-label">Nama Ikon (<a href="https://icons.getbootstrap.com/" target="_blank">Bootstrap Icons</a>)</label><input type="text" id="service-icon" placeholder="Contoh: tools" required class="form-control"></div><div class="col-12"><label for="service-desc" class="form-label">Deskripsi Singkat</label><textarea id="service-desc" rows="2" class="form-control"></textarea></div><div class="col-12"><button type="submit" id="add-service-btn" class="btn btn-primary">Tambah Layanan</button></div></div></form></div></div><div class="card"><div class="card-header">Daftar Layanan</div><div class="card-body"><table id="services-table" class="table table-striped" style="width:100%"><thead><tr><th>Ikon</th><th>Nama</th><th>Deskripsi</th><th>Aksi</th></tr></thead><tbody></tbody></table></div></div>`;
+                section.innerHTML = `<div class="card mb-4"><div class="card-header">Tambah Layanan Baru</div><div class="card-body"><form id="service-form"><div class="row g-3"><div class="col-md-6"><label for="service-name" class="form-label">Nama Layanan</label><input type="text" id="service-name" required class="form-control"></div><div class="col-md-6"><label for="service-icon" class="form-label">Nama Ikon (<a href="https://feathericons.com/" target="_blank">Feather Icons</a>)</label><input type="text" id="service-icon" placeholder="Contoh: tool" required class="form-control"></div><div class="col-12"><label for="service-desc" class="form-label">Deskripsi Singkat</label><textarea id="service-desc" rows="2" class="form-control"></textarea></div><div class="col-12"><label for="service-detailed-desc" class="form-label">Deskripsi Lengkap</label><textarea id="service-detailed-desc" rows="4" class="form-control"></textarea></div><div class="col-12"><button type="submit" id="add-service-btn" class="btn btn-primary">Tambah Layanan</button></div></div></form></div></div><div class="card"><div class="card-header">Daftar Layanan</div><div class="card-body"><table id="services-table" class="table table-striped" style="width:100%"><thead><tr><th>Ikon</th><th>Nama</th><th>Deskripsi</th><th>Aksi</th></tr></thead><tbody></tbody></table></div></div>`;
                 setupServiceForm();
                 const { data, error } = await supabaseClient.from('services').select('*').order('created_at');
                 if (error) { showNotification(`Gagal memuat layanan: ${error.message}`, 'error'); return; }
                 const tableBody = section.querySelector('tbody');
-                tableBody.innerHTML = data.map(item => `<tr><td><i class="bi bi-${item.icon_name || 'gear'}"></i></td><td>${item.name}</td><td>${item.description || ''}</td><td><button class="btn btn-sm btn-danger" onclick="deleteItem('services', ${item.id}, 'loadServices')"><i class="bi bi-trash"></i></button></td></tr>`).join('');
+                tableBody.innerHTML = data.map(item => `
+                    <tr>
+                        <td><i data-feather="${item.icon_name || 'settings'}"></i></td>
+                        <td>${item.name}</td>
+                        <td>${item.description || ''}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#service-edit-modal" data-id="${item.id}" data-name="${item.name}" data-icon_name="${item.icon_name}" data-description="${item.description || ''}" data-detailed_description="${item.detailed_description || ''}"><i data-feather="edit-2"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteItem('services', ${item.id}, 'loadServices')"><i data-feather="trash-2"></i></button>
+                        </td>
+                    </tr>`).join('');
                 initDataTable('services-table');
             };
             const setupServiceForm = () => {
@@ -390,7 +438,12 @@
                     e.preventDefault();
                     const btn = document.getElementById('add-service-btn');
                     setLoading(btn, true);
-                    const { error } = await supabaseClient.from('services').insert({ name: serviceForm['service-name'].value, description: serviceForm['service-desc'].value, icon_name: serviceForm['service-icon'].value });
+                    const { error } = await supabaseClient.from('services').insert({ 
+                        name: serviceForm['service-name'].value, 
+                        description: serviceForm['service-desc'].value, 
+                        icon_name: serviceForm['service-icon'].value,
+                        detailed_description: serviceForm['service-detailed-desc'].value
+                    });
                     if (error) showNotification(`Gagal: ${error.message}`, 'error');
                     else { showNotification('Layanan berhasil ditambahkan.'); serviceForm.reset(); loadServices(); }
                     setLoading(btn, false);
@@ -411,18 +464,71 @@
             // Gallery
             const loadGallery = async () => {
                 const section = document.getElementById('gallery-section');
-                section.innerHTML = `<div class="card mb-4"><div class="card-header">Tambah Gambar Baru</div><div class="card-body"><form id="gallery-form"><div class="mb-3"><label for="gallery-title" class="form-label">Judul Gambar</label><input type="text" id="gallery-title" class="form-control"></div><div class="mb-3"><label for="gallery-file" class="form-label">File Gambar</label><input type="file" id="gallery-file" accept="image/*" required class="form-control"></div><button type="submit" id="upload-gallery-btn" class="btn btn-primary">Unggah Gambar</button></form></div></div><div class="card"><div class="card-header">Daftar Gambar</div><div class="card-body"><table id="gallery-table" class="table table-striped" style="width:100%"><thead><tr><th>Gambar</th><th>Judul</th><th>Aksi</th></tr></thead><tbody></tbody></table></div></div>`;
+                section.innerHTML = `
+                    <div class="card mb-4">
+                        <div class="card-header">Tambah Gambar Baru</div>
+                        <div class="card-body">
+                            <form id="gallery-form">
+                                <div class="mb-3">
+                                    <label for="gallery-title" class="form-label">Judul Gambar</label>
+                                    <input type="text" id="gallery-title" class="form-control">
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="is_before_after">
+                                    <label class="form-check-label" for="is_before_after">
+                                        Ini adalah gambar Before & After
+                                    </label>
+                                </div>
+                                <div id="single-image-upload" class="mb-3">
+                                    <label for="gallery-file" class="form-label">File Gambar</label>
+                                    <input type="file" id="gallery-file" accept="image/*" class="form-control">
+                                </div>
+                                <div id="before-after-upload" class="d-none">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="before-gallery-file" class="form-label">Gambar SEBELUM</label>
+                                            <input type="file" id="before-gallery-file" accept="image/*" class="form-control">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="after-gallery-file" class="form-label">Gambar SESUDAH</label>
+                                            <input type="file" id="after-gallery-file" accept="image/*" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" id="upload-gallery-btn" class="btn btn-primary">Unggah Gambar</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Daftar Gambar</div>
+                        <div class="card-body">
+                            <table id="gallery-table" class="table table-striped" style="width:100%">
+                                <thead><tr><th>Gambar</th><th>Judul</th><th>Tipe</th><th>Aksi</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>`;
                 setupGalleryForm();
                 const { data, error } = await supabaseClient.from('gallery_images').select('*').order('created_at', { ascending: false });
                 if (error) { showNotification(`Gagal memuat galeri: ${error.message}`, 'error'); return; }
                 const tableBody = section.querySelector('tbody');
                 tableBody.innerHTML = data.map(item => `
                     <tr>
-                        <td><img src="${item.image_url}" height="50" class="rounded" onerror="this.style.display='none'"></td>
+                        <td>
+                            ${item.is_before_after
+                                ? `<img src="${item.before_image_url}" height="50" class="rounded me-2" onerror="this.style.display='none'"><img src="${item.after_image_url}" height="50" class="rounded" onerror="this.style.display='none'">`
+                                : `<img src="${item.image_url}" height="50" class="rounded" onerror="this.style.display='none'">`
+                            }
+                        </td>
                         <td>${item.title || 'Tanpa Judul'}</td>
                         <td>
-                            <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#gallery-edit-modal" data-id="${item.id}" data-title="${item.title || ''}"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteStorageItem('galeri', '${item.image_url}', 'gallery_images', ${item.id}, 'loadGallery')"><i class="bi bi-trash"></i></button>
+                            ${item.is_before_after 
+                                ? '<span class="badge bg-info">Before/After</span>' 
+                                : '<span class="badge bg-secondary">Single</span>'
+                            }
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="deleteStorageItem('galeri', '${item.image_url || item.before_image_url}', 'gallery_images', ${item.id}, 'loadGallery')"><i data-feather="trash-2"></i></button>
                         </td>
                     </tr>`).join('');
                 initDataTable('gallery-table');
@@ -430,20 +536,70 @@
             const setupGalleryForm = () => {
                 const galleryForm = document.getElementById('gallery-form');
                 if (!galleryForm) return;
+
+                const isBeforeAfterCheckbox = document.getElementById('is_before_after');
+                const singleImageUpload = document.getElementById('single-image-upload');
+                const beforeAfterUpload = document.getElementById('before-after-upload');
+
+                isBeforeAfterCheckbox.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        singleImageUpload.classList.add('d-none');
+                        beforeAfterUpload.classList.remove('d-none');
+                    } else {
+                        singleImageUpload.classList.remove('d-none');
+                        beforeAfterUpload.classList.add('d-none');
+                    }
+                });
+
                 galleryForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const btn = document.getElementById('upload-gallery-btn');
-                    const file = e.target['gallery-file'].files[0];
-                    if (!file) return showNotification('Pilih file gambar.', 'error');
                     setLoading(btn, true);
-                    const filePath = `public/${Date.now()}-${file.name}`;
-                    const { error: uploadError } = await supabaseClient.storage.from('galeri').upload(filePath, file);
-                    if (uploadError) { showNotification(`Gagal unggah: ${uploadError.message}`, 'error'); setLoading(btn, false); return; }
-                    const { data: { publicUrl } } = supabaseClient.storage.from('galeri').getPublicUrl(filePath);
-                    const { error: dbError } = await supabaseClient.from('gallery_images').insert({ title: e.target['gallery-title'].value, image_url: publicUrl });
-                    if (dbError) showNotification(`Gagal simpan: ${dbError.message}`, 'error');
-                    else { showNotification('Gambar berhasil diunggah.'); galleryForm.reset(); loadGallery(); }
-                    setLoading(btn, false);
+
+                    const title = e.target['gallery-title'].value;
+                    const isBeforeAfter = e.target['is_before_after'].checked;
+
+                    const uploadFile = async (file) => {
+                        if (!file) return null;
+                        const filePath = `public/${Date.now()}-${file.name}`;
+                        const { error: uploadError } = await supabaseClient.storage.from('galeri').upload(filePath, file);
+                        if (uploadError) throw uploadError;
+                        const { data: { publicUrl } } = supabaseClient.storage.from('galeri').getPublicUrl(filePath);
+                        return publicUrl;
+                    };
+
+                    try {
+                        let dbRecord = { title, is_before_after: isBeforeAfter };
+
+                        if (isBeforeAfter) {
+                            const beforeFile = e.target['before-gallery-file'].files[0];
+                            const afterFile = e.target['after-gallery-file'].files[0];
+                            if (!beforeFile || !afterFile) throw new Error('Untuk mode Before/After, kedua file harus diisi.');
+
+                            dbRecord.before_image_url = await uploadFile(beforeFile);
+                            dbRecord.after_image_url = await uploadFile(afterFile);
+                            // Set image_url to before image for consistency or other uses
+                            dbRecord.image_url = dbRecord.before_image_url; 
+
+                        } else {
+                            const singleFile = e.target['gallery-file'].files[0];
+                            if (!singleFile) throw new Error('Pilih file gambar.');
+                            dbRecord.image_url = await uploadFile(singleFile);
+                        }
+
+                        const { error: dbError } = await supabaseClient.from('gallery_images').insert(dbRecord);
+                        if (dbError) throw dbError;
+
+                        showNotification('Gambar berhasil diunggah.');
+                        galleryForm.reset();
+                        isBeforeAfterCheckbox.dispatchEvent(new Event('change'));
+                        loadGallery();
+
+                    } catch (error) {
+                        showNotification(`Gagal: ${error.message}`, 'error');
+                    } finally {
+                        setLoading(btn, false);
+                    }
                 });
             };
 
@@ -460,8 +616,8 @@
                         <td><img src="${item.logo_url}" height="30" onerror="this.style.display='none'"></td>
                         <td>${item.name}</td>
                         <td>
-                            <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#insurance-edit-modal" data-id="${item.id}" data-name="${item.name}" data-logo_url="${item.logo_url}"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteItem('insurance_partners', ${item.id}, 'loadInsurance')"><i class="bi bi-trash"></i></button>
+                            <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#insurance-edit-modal" data-id="${item.id}" data-name="${item.name}" data-logo_url="${item.logo_url}"><i data-feather="edit-2"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteItem('insurance_partners', ${item.id}, 'loadInsurance')"><i data-feather="trash-2"></i></button>
                         </td>
                     </tr>`).join('');
                 initDataTable('insurance-table');
@@ -513,6 +669,7 @@
                     const title = button.getAttribute('data-title');
                     galleryModal.querySelector('#edit-gallery-id').value = id;
                     galleryModal.querySelector('#edit-gallery-title').value = title;
+                    feather.replace();
                 });
 
                 document.getElementById('gallery-edit-form').addEventListener('submit', async (e) => {
@@ -540,6 +697,7 @@
                     insuranceModal.querySelector('#edit-insurance-id').value = id;
                     insuranceModal.querySelector('#edit-insurance-name').value = name;
                     insuranceModal.querySelector('#edit-insurance-logo-url').value = logoUrl;
+                    feather.replace();
                 });
 
                 document.getElementById('insurance-edit-form').addEventListener('submit', async (e) => {
@@ -555,6 +713,39 @@
                         showNotification('Rekanan asuransi berhasil diperbarui.');
                         bootstrap.Modal.getInstance(insuranceModal).hide();
                         loadInsurance();
+                    }
+                    setLoading(btn, false);
+                });
+
+                const serviceModal = document.getElementById('service-edit-modal');
+                serviceModal.addEventListener('show.bs.modal', (event) => {
+                    const button = event.relatedTarget;
+                    const id = button.getAttribute('data-id');
+                    serviceModal.querySelector('#edit-service-id').value = id;
+                    serviceModal.querySelector('#edit-service-name').value = button.getAttribute('data-name');
+                    serviceModal.querySelector('#edit-service-icon').value = button.getAttribute('data-icon_name');
+                    serviceModal.querySelector('#edit-service-desc').value = button.getAttribute('data-description');
+                    serviceModal.querySelector('#edit-service-detailed-desc').value = button.getAttribute('data-detailed_description');
+                    feather.replace();
+                });
+
+                document.getElementById('service-edit-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const id = document.getElementById('edit-service-id').value;
+                    const btn = document.getElementById('save-service-changes-btn');
+                    setLoading(btn, true);
+                    const updates = {
+                        name: document.getElementById('edit-service-name').value,
+                        icon_name: document.getElementById('edit-service-icon').value,
+                        description: document.getElementById('edit-service-desc').value,
+                        detailed_description: document.getElementById('edit-service-detailed-desc').value
+                    };
+                    const { error } = await supabaseClient.from('services').update(updates).eq('id', id);
+                    if (error) showNotification(`Gagal update: ${error.message}`, 'error');
+                    else {
+                        showNotification('Layanan berhasil diperbarui.');
+                        bootstrap.Modal.getInstance(serviceModal).hide();
+                        loadServices();
                     }
                     setLoading(btn, false);
                 });
@@ -618,7 +809,7 @@
 
             setupNavigation();
             setupEditModals();
-            loadDashboardStats(); // Load initial section
+            loadProfileData(); // Load initial section
         });
     </script>
 </body>
