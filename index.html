@@ -32,29 +32,32 @@
         .bg-accent-dark { background-color: #111827; }
         
         .hero-section {
-            position: relative;
-            overflow: hidden;
+            /* height: 100vh; */
         }
-        .hero-section .hero-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(17, 24, 39, 0.7);
-            z-index: 2;
-        }
-        .hero-section .hero-content {
-            position: relative;
-            z-index: 3;
-        }
-        #hero-gallery-carousel {
+        #hero-carousel .carousel-slide {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        #hero-carousel .carousel-slide.active {
+            opacity: 1;
+        }
+        #hero-dots .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #hero-dots .dot.active {
+            background-color: white;
         }
 
         .testimonial-card, .service-card {
@@ -134,14 +137,11 @@
 
     <main>
         <!-- Hero Section -->
-        <section id="home" class="hero-section text-white py-24 md:py-36">
-            <div id="hero-gallery-carousel" class="absolute top-0 left-0 w-full h-full">
-                <div id="gallery-container" class="relative w-full h-full">
-                    <!-- Gallery images will be loaded here -->
-                </div>
-            </div>
-            <div class="hero-overlay"></div>
-            <div class="hero-content container mx-auto px-6 text-center" data-aos="fade-in">
+        <section id="home" class="relative hero-section h-[70vh] text-white flex items-center justify-center">
+            <!-- Carousel container -->
+            <div id="hero-carousel" class="absolute inset-0 w-full h-full z-10"></div>
+            <div class="absolute inset-0 bg-black/60 z-20"></div>
+            <div class="relative container mx-auto px-6 text-center z-30" data-aos="fade-in">
                 <h1 id="profile-company-name-hero" class="text-4xl sm:text-5xl md:text-6xl font-poppins font-bold leading-tight mb-4">UNITY AUTOMOBILE</h1>
                 <p id="profile-tagline" class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">Bengkel Rekanan Asuransi Terbaik di Medan</p>
                 <div class="flex justify-center items-center flex-wrap gap-4">
@@ -155,6 +155,15 @@
                     </a>
                 </div>
             </div>
+            <!-- Carousel controls -->
+            <button id="hero-prev" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 p-2 rounded-full hover:bg-white/40 transition z-40">
+                <i data-feather="chevron-left" class="text-white"></i>
+            </button>
+            <button id="hero-next" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 p-2 rounded-full hover:bg-white/40 transition z-40">
+                <i data-feather="chevron-right" class="text-white"></i>
+            </button>
+            <!-- Carousel dots -->
+            <div id="hero-dots" class="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 z-40"></div>
         </section>
 
         <!-- Tentang Kami -->
@@ -445,8 +454,8 @@
                 loadCompanyProfile(supabaseClient);
                 loadServices(supabaseClient);
                 incrementAndShowVisitorCount(supabaseClient);
+                loadHeroBackground(supabaseClient);
                 loadInsurancePartners(supabaseClient);
-                loadGallery(supabaseClient);
                 loadTestimonials(supabaseClient);
                 setupTestimonialForm(supabaseClient);
                 setupWhatsAppForm(supabaseClient);
@@ -567,53 +576,118 @@
                 }
             }
 
-            async function loadGallery(supabaseClient) {
-                const galleryContainer = document.getElementById('gallery-container');
-                const dotsContainer = document.getElementById('gallery-dots');
-                galleryContainer.innerHTML = '<p class="text-center w-full absolute top-1/2 -translate-y-1/2">Memuat galeri...</p>';
+            async function loadHeroBackground(supabaseClient) {
                 try {
-                    const { data, error } = await supabaseClient.from('gallery_images').select('*').order('created_at', { ascending: false });
+                    const { data, error } = await supabaseClient.from('gallery_images').select('image_url, before_image_url').order('created_at', { ascending: false }).limit(5);
+                    
+                    // --- START DEBUGGING ---
+                    console.log("Data received from Supabase for hero carousel:", data);
+                    // --- END DEBUGGING ---
+
                     if (error) throw error;
-                    galleryContainer.innerHTML = '';
-                    if (dotsContainer) dotsContainer.innerHTML = '';
-                    if (data.length > 0) {
-                        data.forEach((image, index) => {
-                            const slide = document.createElement('div');
-                            slide.className = 'gallery-slide absolute w-full h-full transition-opacity duration-1000 ease-in-out';
-                            slide.style.opacity = index === 0 ? '1' : '0';
-                            
-                            let innerHTML;
-                            if (image.is_before_after && image.before_image_url && image.after_image_url) {
-                                innerHTML = `
-                                    <img src="${image.before_image_url}" 
-                                         alt="${image.title || 'Gallery Image'}" 
-                                         class="w-full h-full object-cover ba-image" 
-                                         data-is-ba="true" 
-                                         data-before-src="${image.before_image_url}" 
-                                         data-after-src="${image.after_image_url}" 
-                                         data-ba-state="before">
-                                    <div class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full ba-label">Before</div>
-                                `;
-                            } else {
-                                innerHTML = `<img src="${image.image_url}" alt="${image.title || 'Gallery Image'}" class="w-full h-full object-cover">`;
-                            }
+                    if (!data || data.length === 0) return;
 
-                            slide.innerHTML = `${innerHTML}<div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/50 to-transparent text-white"><h3 class="font-bold">${image.title || 'Proses Pengerjaan'}</h3></div>`;
-                            galleryContainer.appendChild(slide);
+                    const carouselContainer = document.getElementById('hero-carousel');
+                    const dotsContainer = document.getElementById('hero-dots');
+                    const prevButton = document.getElementById('hero-prev');
+                    const nextButton = document.getElementById('hero-next');
+                    
+                    carouselContainer.innerHTML = '';
+                    dotsContainer.innerHTML = '';
 
-                            if (dotsContainer) {
-                                const dot = document.createElement('button');
-                                dot.className = 'gallery-dot w-3 h-3 bg-white/50 rounded-full transition-colors duration-300';
-                                if(index === 0) dot.classList.add('bg-white');
-                                dotsContainer.appendChild(dot);
-                            }
+                    let currentIndex = 0;
+                    let intervalId;
+
+                    data.forEach((image, index) => {
+                        const imageUrl = image.before_image_url || image.image_url;
+                        
+                        // --- START DEBUGGING ---
+                        console.log(`Processing Slide ${index + 1}: URL is ${imageUrl || 'NOT FOUND'}`);
+                        // --- END DEBUGGING ---
+
+                        const slide = document.createElement('div');
+                        slide.className = 'carousel-slide';
+
+                        if (imageUrl) {
+                            slide.style.backgroundImage = `url("${imageUrl}")`;
+                        } else {
+                            slide.style.backgroundColor = '#111827';
+                            const placeholderText = document.createElement('div');
+                            placeholderText.className = 'flex items-center justify-center h-full';
+                            placeholderText.innerHTML = `<span class="text-gray-400 text-sm">Image ${index + 1} not available</span>`;
+                            slide.appendChild(placeholderText);
+                        }
+                        
+                        if (index === 0) slide.classList.add('active');
+                        carouselContainer.appendChild(slide);
+
+                        const dot = document.createElement('div');
+                        dot.className = 'dot';
+                        if (index === 0) dot.classList.add('active');
+                        dot.addEventListener('click', () => {
+                            goToSlide(index);
+                            resetInterval();
                         });
-                        setupGalleryCarousel(data.length);
-                    } else {
-                        galleryContainer.innerHTML = '<p class="text-center w-full absolute top-1/2 -translate-y-1/2">Galeri masih kosong.</p>';
+                        dotsContainer.appendChild(dot);
+                    });
+                    
+                    feather.replace();
+
+                    const slides = document.querySelectorAll('#hero-carousel .carousel-slide');
+                    const dots = document.querySelectorAll('#hero-dots .dot');
+
+                    if (slides.length <= 1) {
+                        if(prevButton) prevButton.style.display = 'none';
+                        if(nextButton) nextButton.style.display = 'none';
+                        if(dotsContainer) dotsContainer.style.display = 'none';
+                        return;
                     }
+
+                    function goToSlide(index) {
+                        if (slides[currentIndex]) slides[currentIndex].classList.remove('active');
+                        if (dots[currentIndex]) dots[currentIndex].classList.remove('active');
+                        
+                        currentIndex = index;
+                        
+                        if (slides[currentIndex]) slides[currentIndex].classList.add('active');
+                        if (dots[currentIndex]) dots[currentIndex].classList.add('active');
+                    }
+
+                    function nextSlide() {
+                        if (slides.length === 0) return;
+                        const newIndex = (currentIndex + 1) % slides.length;
+                        goToSlide(newIndex);
+                    }
+
+                    function prevSlide() {
+                        if (slides.length === 0) return;
+                        const newIndex = (currentIndex - 1 + slides.length) % slides.length;
+                        goToSlide(newIndex);
+                    }
+                    
+                    function startInterval() {
+                        clearInterval(intervalId);
+                        intervalId = setInterval(nextSlide, 5000);
+                    }
+
+                    function resetInterval() {
+                        clearInterval(intervalId);
+                        startInterval();
+                    }
+
+                    prevButton.addEventListener('click', () => {
+                        prevSlide();
+                        resetInterval();
+                    });
+                    nextButton.addEventListener('click', () => {
+                        nextSlide();
+                        resetInterval();
+                    });
+
+                    startInterval();
+
                 } catch (error) {
-                    galleryContainer.innerHTML = '<p class="text-center w-full text-red-500 absolute top-1/2 -translate-y-1/2">Gagal memuat galeri.</p>';
+                    console.error('Gagal memuat gambar hero:', error.message);
                 }
             }
         
@@ -649,90 +723,6 @@
                     }
                 } catch (error) {
                     el.innerHTML = '<p class="text-center w-full text-red-500">Gagal memuat testimoni.</p>';
-                }
-            }
-
-            function setupGalleryCarousel(imageCount) {
-                let currentSlide = 0;
-                let autoPlayInterval;
-                let beforeAfterInterval;
-
-                const slides = document.querySelectorAll('.gallery-slide');
-                const dots = document.querySelectorAll('.gallery-dot');
-                const prevBtn = document.getElementById('gallery-prev');
-                const nextBtn = document.getElementById('gallery-next');
-
-                function showSlide(index) {
-                    slides.forEach((slide, i) => {
-                        slide.style.opacity = i === index ? '1' : '0';
-                        // Reset B/A state when slide is not active
-                        const baImage = slide.querySelector('.ba-image');
-                        if (baImage && baImage.dataset.isBa === 'true' && i !== index) {
-                            baImage.src = baImage.dataset.beforeSrc;
-                            baImage.dataset.baState = 'before';
-                            const baLabel = slide.querySelector('.ba-label');
-                            if(baLabel) baLabel.textContent = 'Before';
-                        }
-                    });
-                    if (dots.length > 0) {
-                        dots.forEach((dot, i) => {
-                            dot.classList.toggle('bg-white', i === index);
-                            dot.classList.toggle('bg-white/50', i !== index);
-                        });
-                    }
-                    currentSlide = index;
-                    resetAutoPlay();
-                }
-
-                function nextSlide() {
-                    const newIndex = (currentSlide + 1) % imageCount;
-                    showSlide(newIndex);
-                }
-
-                function prevSlide() {
-                    const newIndex = (currentSlide - 1 + imageCount) % imageCount;
-                    showSlide(newIndex);
-                }
-
-                function startAutoPlay() {
-                    autoPlayInterval = setInterval(nextSlide, 4000);
-                    beforeAfterInterval = setInterval(() => {
-                        const activeSlide = slides[currentSlide];
-                        if (!activeSlide) return;
-                        const baImage = activeSlide.querySelector('.ba-image');
-                        if (baImage && baImage.dataset.isBa === 'true') {
-                            const currentState = baImage.dataset.baState;
-                            const baLabel = activeSlide.querySelector('.ba-label');
-                            if (currentState === 'before') {
-                                baImage.src = baImage.dataset.afterSrc;
-                                baImage.dataset.baState = 'after';
-                                if(baLabel) baLabel.textContent = 'After';
-                            } else {
-                                baImage.src = baImage.dataset.beforeSrc;
-                                baImage.dataset.baState = 'before';
-                                if(baLabel) baLabel.textContent = 'Before';
-                            }
-                        }
-                    }, 2000); // Toggles every 2 seconds
-                }
-
-                function resetAutoPlay() {
-                    clearInterval(autoPlayInterval);
-                    clearInterval(beforeAfterInterval);
-                    startAutoPlay();
-                }
-
-                if (dots.length > 0) {
-                    dots.forEach((dot, index) => {
-                        dot.addEventListener('click', () => showSlide(index));
-                    });
-                }
-
-                if (prevBtn) prevBtn.addEventListener('click', prevSlide);
-                if (nextBtn) nextBtn.addEventListener('click', nextSlide);
-
-                if (imageCount > 0) {
-                    startAutoPlay();
                 }
             }
 
