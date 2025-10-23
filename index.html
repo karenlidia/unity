@@ -99,6 +99,28 @@
         .modal-content {
             transition: transform 0.3s ease;
         }
+        .skeleton {
+            background-color: #e5e7eb;
+            border-radius: 0.5rem;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            50% { opacity: .5; }
+        }
+        .cta-pulse {
+            animation: pulse-cta 2.5s infinite ease-in-out;
+        }
+        @keyframes pulse-cta {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .service-card .bg-gradient-to-br i {
+            transition: transform 0.3s ease;
+        }
+        .service-card:hover .bg-gradient-to-br i {
+            transform: scale(1.1) rotate(-5deg);
+        }
     </style>
 </head>
 
@@ -112,6 +134,7 @@
                 <nav class="hidden md:flex space-x-8 text-sm font-semibold text-gray-600">
                     <a href="#layanan" class="hover:primary-blue transition-colors duration-300">Layanan</a>
                     <a href="#asuransi" class="hover:primary-blue transition-colors duration-300">Rekanan</a>
+                    <a href="#galeri" class="hover:primary-blue transition-colors duration-300">Galeri</a>
                     <a href="#testimoni" class="hover:primary-blue transition-colors duration-300">Testimoni</a>
                     <a href="#lokasi" class="hover:primary-blue transition-colors duration-300">Lokasi</a>
                 </nav>
@@ -126,6 +149,7 @@
             <div id="mobile-menu" class="hidden md:hidden mt-4">
                 <a href="#layanan" class="nav-link block py-2 px-4 text-sm hover:bg-gray-100 rounded">Layanan</a>
                 <a href="#asuransi" class="nav-link block py-2 px-4 text-sm hover:bg-gray-100 rounded">Rekanan</a>
+                <a href="#galeri" class="nav-link block py-2 px-4 text-sm hover:bg-gray-100 rounded">Galeri</a>
                 <a href="#testimoni" class="nav-link block py-2 px-4 text-sm hover:bg-gray-100 rounded">Testimoni</a>
                 <a href="#lokasi" class="nav-link block py-2 px-4 text-sm hover:bg-gray-100 rounded">Lokasi</a>
                 <a href="#kontak-form"
@@ -203,7 +227,7 @@
         <!-- Stats Section -->
         <section id="stats" class="py-16 bg-gray-800 text-white">
             <div class="container mx-auto px-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center" data-aos="fade-up">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center" data-aos="fade-up">
                     <div>
                         <h3 class="text-4xl font-poppins font-bold primary-blue">1,500+</h3>
                         <p class="mt-2 font-semibold">Klien Puas</p>
@@ -215,6 +239,10 @@
                     <div>
                         <h3 class="text-4xl font-poppins font-bold primary-blue" id="insurance-count">10+</h3>
                         <p class="mt-2 font-semibold">Asuransi Rekanan</p>
+                    </div>
+                    <div>
+                        <h3 class="text-4xl font-poppins font-bold primary-blue" id="visitor-count">0</h3>
+                        <p class="mt-2 font-semibold">Pengunjung Website</p>
                     </div>
                 </div>
             </div>
@@ -299,6 +327,28 @@
                             Kirim Testimoni
                         </button>
                     </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Galeri Section -->
+        <section id="galeri" class="py-16 md:py-24 bg-gray-50">
+            <div class="container mx-auto px-6" data-aos="fade-up">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-poppins font-bold accent-dark">Galeri Kami</h2>
+                    <p class="text-gray-600 mt-2 max-w-2xl mx-auto">Dokumentasi pekerjaan dan hasil berkualitas dari Unity Automobile.</p>
+                </div>
+                <div class="relative max-w-4xl mx-auto">
+                    <div id="gallery-carousel-container" class="relative h-80 md:h-[500px] w-full overflow-hidden rounded-lg shadow-2xl bg-gray-200 flex items-center justify-center">
+                        <p>Memuat galeri...</p>
+                    </div>
+                    <button id="gallery-prev" class="absolute top-1/2 left-0 transform -translate-y-1/2 sm:-translate-x-1/2 bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-md hover:bg-white transition z-10">
+                        <i data-feather="chevron-left"></i>
+                    </button>
+                    <button id="gallery-next" class="absolute top-1/2 right-0 transform -translate-y-1/2 sm:translate-x-1/2 bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-md hover:bg-white transition z-10">
+                        <i data-feather="chevron-right"></i>
+                    </button>
+                    <div id="gallery-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2"></div>
                 </div>
             </div>
         </section>
@@ -424,6 +474,22 @@
         </div>
     </div>
     
+    <!-- Image Gallery Modal -->
+    <div id="gallery-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center p-4 hidden modal-overlay">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-full flex flex-col modal-content scale-95">
+            <div class="p-4 flex justify-between items-center border-b">
+                <h3 id="gallery-modal-title" class="text-xl font-poppins font-bold accent-dark"></h3>
+                <button id="gallery-modal-close" class="p-1 hover:bg-gray-200 rounded-full">
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+            <div class="p-4 md:p-8 flex-grow overflow-y-auto text-center">
+                <img id="gallery-modal-image" src="" alt="Gambar Galeri" class="max-h-[60vh] w-auto mx-auto rounded-md mb-4">
+                <p id="gallery-modal-description" class="text-gray-700 text-left"></p>
+            </div>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -455,12 +521,14 @@
                 loadServices(supabaseClient);
                 incrementAndShowVisitorCount(supabaseClient);
                 loadHeroBackground(supabaseClient);
+                loadGallery(supabaseClient);
                 loadInsurancePartners(supabaseClient);
                 loadTestimonials(supabaseClient);
                 setupTestimonialForm(supabaseClient);
                 setupWhatsAppForm(supabaseClient);
                 setupShareLocation();
                 setupServiceModal();
+                setupGalleryModal();
             }
 
             async function loadCompanyProfile(supabaseClient) {
@@ -551,6 +619,7 @@
             
             async function incrementAndShowVisitorCount(supabaseClient) {
                 const el = document.getElementById('visitor-count');
+                if (!el) return;
                 try {
                     const { data, error } = await supabaseClient.rpc('increment_visitor_count');
                     if (error) throw error;
@@ -580,10 +649,6 @@
                 try {
                     const { data, error } = await supabaseClient.from('gallery_images').select('image_url, before_image_url').order('created_at', { ascending: false }).limit(5);
                     
-                    // --- START DEBUGGING ---
-                    console.log("Data received from Supabase for hero carousel:", data);
-                    // --- END DEBUGGING ---
-
                     if (error) throw error;
                     if (!data || data.length === 0) return;
 
@@ -598,25 +663,16 @@
                     let currentIndex = 0;
                     let intervalId;
 
-                    data.forEach((image, index) => {
-                        const imageUrl = image.before_image_url || image.image_url;
-                        
-                        // --- START DEBUGGING ---
-                        console.log(`Processing Slide ${index + 1}: URL is ${imageUrl || 'NOT FOUND'}`);
-                        // --- END DEBUGGING ---
+                    const images = data.map(image => image.before_image_url || image.image_url).filter(Boolean);
+                    
+                    if (images.length === 0) return;
 
+                    images.forEach((imageUrl, index) => {
                         const slide = document.createElement('div');
                         slide.className = 'carousel-slide';
 
-                        if (imageUrl) {
-                            slide.style.backgroundImage = `url("${imageUrl}")`;
-                        } else {
-                            slide.style.backgroundColor = '#111827';
-                            const placeholderText = document.createElement('div');
-                            placeholderText.className = 'flex items-center justify-center h-full';
-                            placeholderText.innerHTML = `<span class="text-gray-400 text-sm">Image ${index + 1} not available</span>`;
-                            slide.appendChild(placeholderText);
-                        }
+                        // Using single quotes and escaping any single quotes in the URL for robustness
+                        slide.style.backgroundImage = `url('${imageUrl.replace(/'/g, "'")}')`;
                         
                         if (index === 0) slide.classList.add('active');
                         carouselContainer.appendChild(slide);
@@ -644,10 +700,11 @@
                     }
 
                     function goToSlide(index) {
+                        if (slides.length === 0) return;
                         if (slides[currentIndex]) slides[currentIndex].classList.remove('active');
                         if (dots[currentIndex]) dots[currentIndex].classList.remove('active');
                         
-                        currentIndex = index;
+                        currentIndex = (index + slides.length) % slides.length;
                         
                         if (slides[currentIndex]) slides[currentIndex].classList.add('active');
                         if (dots[currentIndex]) dots[currentIndex].classList.add('active');
@@ -689,6 +746,150 @@
                 } catch (error) {
                     console.error('Gagal memuat gambar hero:', error.message);
                 }
+            }
+
+            async function loadGallery(supabaseClient) {
+                const container = document.getElementById('gallery-carousel-container');
+                const dotsContainer = document.getElementById('gallery-dots');
+                const prevBtn = document.getElementById('gallery-prev');
+                const nextBtn = document.getElementById('gallery-next');
+
+                if (!container || !dotsContainer || !prevBtn || !nextBtn) return;
+
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('gallery_images')
+                        .select('image_url, before_image_url, after_image_url, title, description')
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+                    
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<p class="text-center text-gray-500">Belum ada gambar di galeri.</p>';
+                        prevBtn.style.display = 'none';
+                        nextBtn.style.display = 'none';
+                        dotsContainer.style.display = 'none';
+                        return;
+                    }
+
+                    const images = data.reduce((acc, img) => {
+                        const common = { title: img.title, description: img.description };
+                        if (img.image_url) acc.push({ url: img.image_url, ...common });
+                        if (img.before_image_url) acc.push({ url: img.before_image_url, ...common, title: `${img.title || 'Gambar'} (Sebelum)` });
+                        if (img.after_image_url) acc.push({ url: img.after_image_url, ...common, title: `${img.title || 'Gambar'} (Sesudah)` });
+                        return acc;
+                    }, []);
+
+                    if (images.length === 0) {
+                        container.innerHTML = '<p class="text-center text-gray-500">Tidak ada gambar yang valid untuk ditampilkan.</p>';
+                        prevBtn.style.display = 'none';
+                        nextBtn.style.display = 'none';
+                        dotsContainer.style.display = 'none';
+                        return;
+                    }
+
+                    container.innerHTML = '';
+                    dotsContainer.innerHTML = '';
+                    let currentIndex = 0;
+
+                    images.forEach((imageData, index) => {
+                        const slide = document.createElement('div');
+                        slide.className = 'absolute w-full h-full transition-opacity duration-500 ease-in-out opacity-0 cursor-pointer pointer-events-none';
+                        
+                        if (index === 0) {
+                            slide.classList.remove('opacity-0');
+                            slide.classList.remove('pointer-events-none');
+                        }
+                        
+                        const img = document.createElement('img');
+                        img.src = imageData.url;
+                        img.alt = imageData.title || `Galeri Unity Automobile ${index + 1}`;
+                        img.className = 'w-full h-full object-cover';
+                        img.loading = 'lazy';
+
+                        slide.appendChild(img);
+
+                        slide.addEventListener('click', () => {
+                            openGalleryModal(imageData);
+                        });
+
+                        container.appendChild(slide);
+
+                        const dot = document.createElement('button');
+                        dot.className = 'w-3 h-3 rounded-full bg-white/60 hover:bg-white transition';
+                        if (index === 0) {
+                            dot.classList.add('!bg-white');
+                        }
+                        dot.addEventListener('click', () => goToGallerySlide(index));
+                        dotsContainer.appendChild(dot);
+                    });
+                    
+                    feather.replace();
+                    const slides = container.children;
+                    const dots = dotsContainer.children;
+
+                    if (slides.length <= 1) {
+                        prevBtn.style.display = 'none';
+                        nextBtn.style.display = 'none';
+                        dotsContainer.style.display = 'none';
+                        return;
+                    }
+
+                    function goToGallerySlide(index) {
+                        if (slides.length === 0) return;
+                        
+                        slides[currentIndex].classList.add('opacity-0');
+                        slides[currentIndex].classList.add('pointer-events-none');
+                        dots[currentIndex].classList.remove('!bg-white');
+                        
+                        currentIndex = (index + slides.length) % slides.length;
+                        
+                        slides[currentIndex].classList.remove('opacity-0');
+                        slides[currentIndex].classList.remove('pointer-events-none');
+                        dots[currentIndex].classList.add('!bg-white');
+                    }
+
+                    prevBtn.addEventListener('click', () => goToGallerySlide(currentIndex - 1));
+                    nextBtn.addEventListener('click', () => goToGallerySlide(currentIndex + 1));
+
+                } catch (error) {
+                    console.error('Gagal memuat galeri:', error.message);
+                    container.innerHTML = `<p class="text-center text-red-500">Gagal memuat galeri: ${error.message}</p>`;
+                }
+            }
+
+            function openGalleryModal(imageData) {
+                const modal = document.getElementById('gallery-modal');
+                const modalTitle = document.getElementById('gallery-modal-title');
+                const modalImage = document.getElementById('gallery-modal-image');
+                const modalDescription = document.getElementById('gallery-modal-description');
+                
+                if (!modal || !modalTitle || !modalImage || !modalDescription) return;
+
+                modalTitle.textContent = imageData.title || 'Detail Gambar';
+                modalImage.src = imageData.url;
+                modalDescription.textContent = imageData.description || 'Tidak ada deskripsi.';
+                
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+
+            function setupGalleryModal() {
+                const modal = document.getElementById('gallery-modal');
+                const closeButton = document.getElementById('gallery-modal-close');
+                if (!modal || !closeButton) return;
+
+                closeButton.addEventListener('click', () => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                });
+
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                    }
+                });
             }
         
             async function loadTestimonials(supabaseClient) {
@@ -802,7 +1003,13 @@
                     const name = waForm['wa-nama'].value, phone = waForm['wa-no'].value, message = waForm['wa-pesan'].value;
                     try { await supabaseClient.from('contacts').insert([{ name, phone, message }]); } 
                     catch(error) { console.error('Error saving contact:', error.message); }
-                    const waMessage = `Halo Unity Automobile,\n\nNama: *${name}*\nNo. WA: *${phone}*\n\nPesan:\n${message}`;
+                    const waMessage = `Halo Unity Automobile,
+
+Nama: *${name}*
+No. WA: *${phone}*
+
+Pesan:
+${message}`;
                     const encodedMessage = encodeURIComponent(waMessage);
                     window.open(`https://api.whatsapp.com/send?phone=${window.WORKSHOP_WA_NUMBER || '6285372336699'}&text=${encodedMessage}`, '_blank');
                     setLoading(sendBtn, false);
